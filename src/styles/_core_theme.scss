@@ -1,0 +1,106 @@
+@use 'variables' as *;
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main, $bg-main);
+  color: var(--text-main, $text-main);
+}
+
+section {
+  width: 100%;
+  max-width: var(--max-width, $max-width);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+  flex: 1; // Pushes footer to bottom on short pages
+}
+
+/* Base Links & Typography */
+a {
+  color: var(--brand-accent, $brand-accent);
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+
+  &:hover {
+    color: var(--brand-hover, $brand-hover);
+  }
+}
+
+/* SVG Fill Controls */
+.menu-icon path,
+.svg-icon,
+.site-nav .menu-icon svg path {
+  fill: var(--text-main, $text-main);
+}
+
+/* Footer Defaults */
+.site-footer {
+  background-color: var(--bg-surface, $bg-surface);
+  border-top: 1px solid var(--border-subtle, $border-subtle);
+}
+
+/* ==========================================
+   1. Base Reset (Strips browser & framework defaults)
+   ========================================== */
+button {
+  all: unset; /* Modern reset: clears padding, borders, background, appearances */
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   2. Styled Button Rule
+   ========================================== */
+button {
+  /* Layout & Box Model */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.625rem 1.5rem;
+  margin: 0;
+
+  /* Typography */
+  font-family: inherit;
+  font-size: var(--font-base, $font-base);
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+
+  /* Colors & Styling */
+  background-color: var(--brand-accent, $brand-accent);
+  color: var(--text-main, $text-main);
+  border-radius: var(--radius-md, $radius-md);
+  border: none;
+  box-shadow: var(--shadow-sm, $shadow-sm);
+  cursor: pointer;
+
+  /* Transitions */
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  /* Responsive Width (sm:w-auto) */
+  @media (min-width: 640px) {
+    width: auto;
+  }
+
+  /* States */
+  &:hover {
+    background-color: var(--brand-hover, $brand-hover);
+    box-shadow: var(--shadow-glow, $shadow-glow);
+  }
+
+  &:active {
+    background-color: var(--brand-active, $brand-active);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus, $border-focus);
+    outline-offset: 2px;
+  }
+
+}
