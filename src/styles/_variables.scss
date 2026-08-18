@@ -2,11 +2,19 @@
 // SCSS Variables: High-Contrast Dark Charcoal & Warm Rose
 // ==========================================================================
 
+// --- Typography & Google Fonts ---
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Urbanist:wght@600;700;800&display=swap');
+
+$font-family-display: 'Urbanist', system-ui, -apple-system, sans-serif;
+$font-family-body: 'Figtree', system-ui, -apple-system, sans-serif;
+$font-family-mono: 'JetBrains Mono', monospace;
+
 // --- Background Layers (Elevated Neutral Charcoal) ---
 $bg-main: #121214;         // Dark charcoal floor
 $bg-surface: #1a1a1e;      // Surface cards & modals
 $bg-surface-hover: #26262b;// Surface hover state
 $bg-overlay: #2d2d34;      // Popovers & floating panels
+$bg-glass: rgba(26, 26, 30, 0.75);
 
 // --- Borders & Dividers ---
 $border-subtle: #27272a;   // Subtle separators
@@ -44,6 +52,8 @@ $font-sm: 0.75rem;         // 12px
 $font-base: 0.875rem;      // 14px
 $font-lg: 1rem;            // 16px
 $font-xl: 1.125rem;        // 18px
+$font-2xl: 1.5rem;          // 24px
+$font-3xl: 1.875rem;        // 30px
 
 // --- Label-Specific Design Tokens ---
 $label-font-size: $font-xs;
@@ -90,11 +100,16 @@ $max-width: 1200px;
 // ==========================================================================
 
 :root {
+  --font-family-display: #{$font-family-display};
+  --font-family-body: #{$font-family-body};
+  --font-family-mono: #{$font-family-mono};
+
   /* Backgrounds */
   --bg-main: #{$bg-main};
   --bg-surface: #{$bg-surface};
   --bg-surface-hover: #{$bg-surface-hover};
   --bg-overlay: #{$bg-overlay};
+  --bg-glass: #{$bg-glass};
 
   /* Borders */
   --border-subtle: #{$border-subtle};
@@ -132,6 +147,8 @@ $max-width: 1200px;
   --font-base: #{$font-base};
   --font-lg: #{$font-lg};
   --font-xl: #{$font-xl};
+  --font-2xl: #{$font-2xl};
+  --font-3xl: #{$font-3xl};
 
   /* Label */
   --label-font-size: #{$label-font-size};
