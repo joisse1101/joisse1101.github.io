@@ -1,0 +1,112 @@
+@use 'variables' as *;
+
+// ==========================================================================
+// Base Card Mixin & Core Component
+// ==========================================================================
+
+@mixin base-card {
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  font-size: $font-sm;
+  color: $text-muted;
+  background-color: $bg-surface;
+  border: 1px solid $border-color;
+}
+
+.card {
+  @include base-card;
+
+  /* Control Panel Variation */
+  &-control-panel {
+    @include base-card;
+    padding: $card-padding-md;
+  }
+
+  /* Output Logs Variation */
+  &-output-logs {
+    @include base-card;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    padding: 0.75rem;
+    background-color: $bg-main;
+    border-color: $border-subtle;
+  }
+
+  /* Accent Highlight Card (Warm Rose Theme) */
+  &-rose {
+    @include base-card;
+    padding: 1rem;
+    font-size: $font-base;
+    color: $text-main;
+    background-color: rgba($brand-accent, 0.06);
+    border-color: $brand-accent;
+    box-shadow: $shadow-glow;
+  }
+}
+
+// ==========================================================================
+// Input Card Component
+// Grouping color pickers/inputs, label controls, and action buttons
+// ==========================================================================
+
+.input-card {
+  @include base-card;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: $border-focus;
+    box-shadow: $shadow-focus-ring;
+  }
+}
+
+// ==========================================================================
+// Form Card Component
+// Container designed to group multiple Input Cards together
+// ==========================================================================
+
+.form-card {
+  @include base-card;
+  padding: $card-padding-md;
+  display: flex;
+  flex-direction: column;
+  gap: $card-gap-md;
+
+  &__header {
+    border-bottom: 1px solid $border-subtle;
+    padding-bottom: 0.75rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-lg;
+    font-weight: 700;
+    color: $text-main;
+  }
+
+  &__description {
+    margin-top: 0.25rem;
+    font-size: $font-sm;
+    color: $text-muted;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid $border-subtle;
+  }
+}
