@@ -17,15 +17,14 @@ async def load_dependencies():
             f.write(content)
 
 
-
 asyncio.run(load_dependencies())
 
 # Import modules after loading
 from granny_square import PatternedColouredGrannySquare
 
-async def generate_square(grid_size, palette, num_patterns):
+async def generate_square(grid_size, palette, num_patterns, curr_pattern_grid=None):
     granny_square = await PatternedColouredGrannySquare.create(
-        grid_size, list(palette), num_patterns
+        grid_size, list(palette), num_patterns, curr_pattern_grid
     )
     colour_grid, pattern_grid = await granny_square.get_granny_square_data()
 

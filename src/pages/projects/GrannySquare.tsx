@@ -3,12 +3,13 @@ import { ColorPalettePicker } from '../../components/ColourPalettePicker';
 import { Tabs, type TabItem } from '../../components/Tabs';
 import { GrannyGrid } from '../../components/GrannyGrid';
 import { PaletteDisplay } from '../../components/PaletteDisplay';
+import { InputGrid } from '../../components/InputGrid';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
     interface Window {
-        generateGrannySquare?: (gridSize: number, colors: string[], numPatterns: number) => Promise<{ colourGrid: string[][]; patternGrid: string[][] }>;
-        setGenerationLogs?: (logs: string) => void;
+        generateGrannySquare?: (gridSize: number, colors: string[], numPatterns: number, patternGrid?: (number | undefined)[][]) => Promise<{ colourGrid: string[][]; patternGrid: string[][] }>;
+        setGenerationLogs?: (logs: string[]) => void;
     }
 }
 
@@ -18,7 +19,8 @@ export default function GrannySquare() {
     const [gridSize, setGridSize] = useState<number>(18);
     const [numPatterns, setNumPatterns] = useState<number>(6);
     const [colors, setColors] = useState<string[]>([]);
-    const [generationLogs, setGenerationLogs] = useState<string>('');
+    const [patternGrid, setPatternGrid] = useState<string[][]>(Array.from({ length: gridSize }, () => Array(gridSize).fill(''))); // User editable pattern grid
+    const [generationLogs, setGenerationLogs] = useState<string[]>([]);
 
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
@@ -58,23 +60,44 @@ export default function GrannySquare() {
         };
     }, []);
 
+    const handleClearGrid = () => {
+        const clearedGrid = Array.from({ length: gridSize }, () =>
+            Array.from({ length: gridSize }, () => '')
+        );
+        setPatternGrid(clearedGrid);
+    };
+
     const handleGenerate = async () => {
         setActiveTab('logs-tab');
         setIsOutputDisabled(true);
 
         if (gridSize > 0 && numPatterns > 0 && colors.length > 0) {
             if (window.generateGrannySquare) {
-                const result = await window.generateGrannySquare(gridSize, colors, numPatterns);
+
+                const result = await window.generateGrannySquare(
+                    gridSize,
+                    colors,
+                    numPatterns,
+                    patternGrid.some(row => row.some(cell => cell !== ''))
+                        ? patternGrid.map(row =>
+                            row.map(cell => {
+                                const parsed = parseInt(cell, 10);
+                                return Number.isNaN(parsed) ? undefined : parsed;
+                            })
+                        )
+                        : undefined
+                );
                 setGrannyGridState({
                     gridSize: gridSize,
                     colourGrid: result.colourGrid,
                     patternGrid: result.patternGrid,
                     palette: colors,
                 });
+                setPatternGrid(result.patternGrid);
                 setIsOutputDisabled(false);
                 setActiveTab('output-tab');
             } else {
-                setGenerationLogs('generateGrannySquare function is not available on window.');
+                setGenerationLogs(['something went wrong.', 'generateGrannySquare function is not available on window.']);
             }
         }
 
@@ -120,12 +143,28 @@ export default function GrannySquare() {
             ),
         },
         {
+            id: 'patterns-tab',
+            label: 'Patterns',
+            content: (
+                <div className="output-section">
+                    <div id="grid-container">
+                        <InputGrid
+                            gridInput={patternGrid}
+                            setGridInput={setPatternGrid}
+                            gridSize={gridSize}
+                            maxInput={numPatterns - 1}
+                        />
+                    </div>
+                </div>
+            ),
+        },
+        {
             id: 'logs-tab',
             label: 'Logs',
             content: (
                 <div className="output-section">
                     <div id="log-container" className="card card-output-logs">
-                        {generationLogs ? generationLogs : `Click Generate Square to begin`}
+                        {generationLogs && generationLogs.length > 0 ? generationLogs.join('\n') : `Click Generate Square to begin`}
                     </div>
                 </div>
             ),
@@ -143,12 +182,18 @@ export default function GrannySquare() {
                     <div className="form-group">
                         <label htmlFor="gridSize">Grid Size</label>
                         <input type="number" id="gridSize" value={gridSize}
-                            onChange={(e) => setGridSize(Number(e.target.value))}
+                            onChange={(e) => {
+                                setGridSize(Number(e.target.value))
+                                handleClearGrid(); // Clear the pattern grid when grid size changes
+                            }}
                             disabled={isLoading} />
                     </div>
                     <div className="form-group">
                         <label htmlFor="numPatterns">Number of Patterns</label>
-                        <input type="number" id="numPatterns" value={numPatterns} onChange={(e) => setNumPatterns(Number(e.target.value))} disabled={isLoading} />
+                        <input type="number" id="numPatterns" value={numPatterns} onChange={(e) => {
+                            setNumPatterns(Number(e.target.value))
+                            handleClearGrid(); // Clear the pattern grid when number of patterns changes
+                        }} disabled={isLoading} />
                     </div>
                     <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
                         <summary className={`accordion-header ${isLoading ? 'disabled' : ''}`}>Colour Settings / Palette</summary>
