@@ -1,4 +1,8 @@
-import React, { useState, type CSSProperties } from 'react';
+import React, { useState, } from 'react';
+
+interface CustomCSSProperties extends React.CSSProperties {
+    [key: `--${string}`]: string | number;
+}
 
 export type CellColour = string | [string, string];
 
@@ -33,7 +37,7 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
                     const isAnimationDone = animatedCells[cellKey];
 
                     const isMix = Array.isArray(colourList) && colourList.length === 2;
-                    let cellStyle: React.CSSProperties = {};
+                    let cellStyle: CustomCSSProperties = {};
                     let colourAttr = '';
                     let colourTitle = '';
 
@@ -41,21 +45,21 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
                         const [c1, c2] = colourList;
                         cellStyle = {
                             '--cell-bg': `linear-gradient(135deg, ${c1} 0% 50%, ${c2} 50% 100%)`,
-                        } as React.CSSProperties;
+                        };
                         colourTitle = `Mix: ${c1} to ${c2}`;
                         colourAttr = `${c1.toLowerCase()} ${c2.toLowerCase()}`;
                     } else {
                         const colourVal = Array.isArray(colourList) ? colourList[0] : colourList;
                         cellStyle = {
                             '--cell-bg-color': colourVal,
-                        } as React.CSSProperties;
+                        };
                         colourTitle = colourVal;
                         colourAttr = colourVal.toLowerCase();
                     }
 
                     const delay = (rowIdx + colIdx) * 0.05;
                     if (!isAnimationDone) {
-                        (cellStyle as any)['--delay'] = `${delay.toFixed(2)}s`;
+                        cellStyle['--delay'] = `${delay.toFixed(2)}s`;
                     }
 
                     // Check if cell should be highlighted based on current active palette colour
