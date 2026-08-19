@@ -198,10 +198,6 @@
     border-color: $border-focus;
   }
   
-  &[open] > .accordion-header:hover {
-    background-color: transparent;
-  }
-
   .accordion-header {
     padding: 0.875rem 1.25rem;
     font-size: $font-sm;
@@ -211,17 +207,21 @@
     cursor: pointer;
     user-select: none;
     transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
-
+    background-color 0.2s ease,
+    color 0.2s ease;
+    
     &:hover:not(.disabled) {
       background-color: $bg-surface-hover;
       color: $brand-hover;
     }
-
+    
     &::marker:not(.disabled) {
       color: $brand-accent; // Warm Rose marker indicator
     }
+  }
+  
+  &[open] > .accordion-header:hover:not(.disabled) {
+    background-color: transparent;
   }
 
   &[open] {
