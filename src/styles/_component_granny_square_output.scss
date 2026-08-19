@@ -68,6 +68,8 @@
 
   &.card-output-logs {
     background-color: $bg-surface;
+    white-space: pre-line; // Preserve line breaks in logs
+    font-family: monospace;
   }
 
   &:empty {

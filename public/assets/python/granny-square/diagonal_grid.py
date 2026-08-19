@@ -501,12 +501,18 @@ class DiagonalGrid:
             }
         return s_elem_domains
 
-    async def get_secondary_elements_on_grid(self) -> List[List[Any]]:
+    async def get_secondary_elements_on_grid(
+        self, s_elem_grid: List[List[Any]] = None
+    ) -> List[List[Any]]:
         """
         Returns a 2D grid representation of secondary elements.
         The distribution is randomized while ensuring no two identical secondary elements are adjacent.
         """
-        grid = [[None for _ in range(self.grid_size)] for _ in range(self.grid_size)]
+        grid = (
+            [[None for _ in range(self.grid_size)] for _ in range(self.grid_size)]
+            if s_elem_grid is None
+            else s_elem_grid
+        )
 
         primary_element_map, cell_primary_element_map = (
             self.__get_primary_elements_maps()
