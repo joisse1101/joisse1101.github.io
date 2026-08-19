@@ -194,7 +194,7 @@
   overflow: hidden;
   transition: border-color 0.2s ease, opacity 0.2s ease;
 
-  &:hover {
+  &:hover:not(.disabled):not([open]) {
     border-color: $border-focus;
   }
   
@@ -214,12 +214,12 @@
       background-color 0.2s ease,
       color 0.2s ease;
 
-    &:hover {
+    &:hover:not(.disabled) {
       background-color: $bg-surface-hover;
       color: $brand-hover;
     }
 
-    &::marker {
+    &::marker:not(.disabled) {
       color: $brand-accent; // Warm Rose marker indicator
     }
   }
@@ -239,7 +239,8 @@
   // Disabled State (Handles both [disabled] and [aria-disabled="true"])
   // ------------------------------------------------------------------------
   &[disabled],
-  &[aria-disabled="true"] {
+  &[aria-disabled="true"],
+  .disabled {
     opacity: 0.5;
     pointer-events: none; // Disables all click/hover interaction
     user-select: none;
