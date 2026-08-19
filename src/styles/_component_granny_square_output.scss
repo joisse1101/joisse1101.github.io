@@ -122,8 +122,7 @@
   }
 }
 
-/* Hover/Click Highlight State Rules */
-#grid-container.has-highlight {
+.granny-grid.has-highlight {
   .grid-cell {
     opacity: 0.2;
   }

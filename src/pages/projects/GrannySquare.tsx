@@ -8,24 +8,31 @@ import { PaletteDisplay } from '../../components/PaletteDisplay';
 declare global {
     interface Window {
         generateGrannySquare?: (gridSize: number, colors: string[], numPatterns: number) => Promise<{ colourGrid: string[][]; patternGrid: string[][] }>;
-        setColourGrid?: (grid: string[][]) => void;
-        setPatternGrid?: (grid: string[][]) => void;
+        setGenerationLogs?: (logs: string) => void;
     }
 }
 
 export default function GrannySquare() {
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
     const [gridSize, setGridSize] = useState<number>(18);
     const [numPatterns, setNumPatterns] = useState<number>(6);
-    const [generationLogs, setGenerationLogs] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isColourPickerOpen, setIsColourPickerOpen] = useState<boolean>(false);
     const [colors, setColors] = useState<string[]>([]);
+    const [generationLogs, setGenerationLogs] = useState<string>('');
 
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
 
-    const [colourGrid, setColourGrid] = useState<string[][]>(new Array(gridSize).fill(new Array(gridSize).fill('')));
-    const [patternGrid, setPatternGrid] = useState<string[][]>(new Array(gridSize).fill(new Array(gridSize).fill('')));
+    const [grannyGridState, setGrannyGridState] = useState<{
+        gridSize: number;
+        colourGrid: string[][]; patternGrid: string[][];
+        palette: string[];
+    }>({
+        gridSize: gridSize,
+        colourGrid: new Array(gridSize).fill(new Array(gridSize).fill('')),
+        patternGrid: new Array(gridSize).fill(new Array(gridSize).fill('')),
+        palette: colors,
+    });
 
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
@@ -58,17 +65,19 @@ export default function GrannySquare() {
         if (gridSize > 0 && numPatterns > 0 && colors.length > 0) {
             if (window.generateGrannySquare) {
                 const result = await window.generateGrannySquare(gridSize, colors, numPatterns);
-                console.log('generateGrannySquare function called with:', gridSize, colors, numPatterns);
-                console.log('Result:', result);
-                setColourGrid(result.colourGrid);
-                setPatternGrid(result.patternGrid);
+                setGrannyGridState({
+                    gridSize: gridSize,
+                    colourGrid: result.colourGrid,
+                    patternGrid: result.patternGrid,
+                    palette: colors,
+                });
+                setIsOutputDisabled(false);
+                setActiveTab('output-tab');
             } else {
-                console.error('generateGrannySquare function is not available on window.');
+                setGenerationLogs('generateGrannySquare function is not available on window.');
             }
         }
 
-        setIsOutputDisabled(false);
-        setActiveTab('output-tab');
     };
 
     const activeHighlight = hoveredColour ?? selectedColour;
@@ -91,15 +100,17 @@ export default function GrannySquare() {
                 <div className="output-flex-wrapper">
                     <div id="grid-container">
                         <GrannyGrid
-                            gridSize={gridSize}
-                            colourGrid={colourGrid}
-                            patternGrid={patternGrid}
+                            key={JSON.stringify(grannyGridState)} // Force re-render when state changes
+                            gridSize={grannyGridState.gridSize}
+                            colourGrid={grannyGridState.colourGrid}
+                            patternGrid={grannyGridState.patternGrid}
                             highlightedColour={activeHighlight}
                         />
                     </div>
                     <div id="palette-table-container">
                         <PaletteDisplay
-                            palette={colors}
+                            key={JSON.stringify(grannyGridState.palette)} // Force re-render when palette changes
+                            palette={grannyGridState.palette}
                             activeColour={selectedColour}
                             onHoverColour={setHoveredColour}
                             onClickColour={handleColourClick}
@@ -114,7 +125,7 @@ export default function GrannySquare() {
             content: (
                 <div className="output-section">
                     <div id="log-container" className="card card-output-logs">
-                        Click Generate Square to begin
+                        {generationLogs ? generationLogs : `Click Generate Square to begin`}
                     </div>
                 </div>
             ),
@@ -139,7 +150,7 @@ export default function GrannySquare() {
                         <label htmlFor="numPatterns">Number of Patterns</label>
                         <input type="number" id="numPatterns" value={numPatterns} onChange={(e) => setNumPatterns(Number(e.target.value))} disabled={isLoading} />
                     </div>
-                    <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`} open={isColourPickerOpen} onToggle={(e) => setIsColourPickerOpen(e.currentTarget.open)}>
+                    <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
                         <summary className={`accordion-header ${isLoading ? 'disabled' : ''}`}>Colour Settings / Palette</summary>
                         <ColorPalettePicker onChange={(newPalette: string[]) => setColors(newPalette)} />
                     </details>
