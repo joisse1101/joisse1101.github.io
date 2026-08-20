@@ -1,6 +1,6 @@
 import React, { useRef, type ChangeEvent } from 'react';
-import { downloadGridCSV, parseGridCSV } from '../utils/csv';
-import { useMediaQuery } from '../hooks/display';
+import { downloadGridCSV, parseGridCSV } from '@utils/csv';
+import { useMediaQuery } from '@hooks/display';
 
 export type CellColour = string | [string, string];
 

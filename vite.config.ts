@@ -7,14 +7,12 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+    tsconfigPaths: true,
   },
   css: {
     preprocessorOptions: {
       scss: {
-        loadPaths: [path.resolve(__dirname, 'src')],
+        loadPaths: [path.resolve(import.meta.dirname, 'src')],
       }
     }
   }
