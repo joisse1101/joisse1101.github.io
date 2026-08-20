@@ -215,7 +215,7 @@
       color: $brand-hover;
     }
     
-    &::marker:not(.disabled) {
+    &:not(.disabled)::marker {
       color: $brand-accent; // Warm Rose marker indicator
     }
   }
