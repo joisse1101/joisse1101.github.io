@@ -1,4 +1,4 @@
-import React, { useState, } from 'react';
+import React, { useEffect, useState, } from 'react';
 
 interface CustomCSSProperties extends React.CSSProperties {
     [key: `--${string}`]: string | number;
@@ -24,6 +24,10 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
     const handleAnimationEnd = (cellKey: string) => {
         setAnimatedCells((prev) => ({ ...prev, [cellKey]: true }));
     };
+
+    useEffect(() => {
+        setAnimatedCells({});
+    }, [colourGrid, patternGrid, gridSize]);
 
     return (
         <div
