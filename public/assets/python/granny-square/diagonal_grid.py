@@ -151,6 +151,7 @@ class DiagonalGrid:
                 f"evenly on a {self.grid_size}x{self.grid_size} grid."
             )
 
+        print("✅ Successfully calculated primary element distribution by ID.")
         return distribution_by_id
 
     async def __get_primary_elements_on_diagonals(self) -> List[List[Any]]:
@@ -193,6 +194,7 @@ class DiagonalGrid:
                     curr_squares_on_diagonal = 0.0
                     diagonal_index += 1
 
+        print("✅ Successfully generated primary elements on diagonals.")
         return primary_elements_on_diagonals
 
     def get_primary_elements_on_grid(
@@ -242,6 +244,8 @@ class DiagonalGrid:
                 row = start_row + k
                 col = diagonal_idx - 1 - row
                 grid[row][col] = fill_vals[k % len(fill_vals)]
+
+        print("✅ Successfully generated primary elements on grid.")
         return grid
 
     def __get_primary_elements_maps(
@@ -297,7 +301,7 @@ class DiagonalGrid:
                 col = diagonal_index - 1 - row
                 cell_primary_element_map[(row, col)] = fill_vals[k % len(fill_vals)]
 
-        # Return as a tuple
+        print("✅ Successfully generated primary element maps.")
         return dict(primary_element_map), cell_primary_element_map
 
     def __validate_secondary_distribution(self, primary_element_map: Dict) -> bool:
@@ -371,6 +375,8 @@ class DiagonalGrid:
                     f"but at most {max_possible_in_diagonal} non-adjacent placements are possible."
                 )
                 return False
+
+        print("✅ Successfully validated primary element distribution.")
         return True
 
     def __get_neighbour_map(self):
@@ -398,6 +404,8 @@ class DiagonalGrid:
                         if 0 <= nr < self.grid_size and 0 <= nc < self.grid_size:
                             coords.append((nr, nc))
                 neighbor_map[(r, c)] = coords
+
+        print("✅ Successfully generated neighbor map for grid cells.")
         return neighbor_map
 
     def __get_secondary_elements_inventory(
@@ -435,6 +443,8 @@ class DiagonalGrid:
                     idx = (start_s_elem + i) % self.num_secondary_elements()
                     secondary_inventory_map[p_elem][idx] += 1
                     curr_total_s_elems[idx] += 1
+
+        print("✅ Successfully generated secondary elements inventory mapping.")
         return secondary_inventory_map
 
     def __get_empty_s_elem_cells(
@@ -471,6 +481,9 @@ class DiagonalGrid:
                     empty_cells.add((r, c))
                     empty_cells_by_p_elem[p_elem].add((r, c))
 
+        print(
+            "✅ Successfully identified empty and filled cells for secondary elements."
+        )
         return empty_cells_by_p_elem, empty_cells
 
     def __get_cell_s_elem_domains(
@@ -499,6 +512,10 @@ class DiagonalGrid:
                 for s_elem in range(self.num_secondary_elements())
                 if s_elem not in used_neighbours
             }
+
+        print(
+            "✅ Successfully computed legal candidate values (domains) for each empty cell."
+        )
         return s_elem_domains
 
     async def get_secondary_elements_on_grid(
@@ -631,20 +648,38 @@ class DiagonalGrid:
             return False  # No valid assignment found for this cell
 
         iterations = 0
-
+        success = False
         while iterations < 3:
             if await backtrack():
-                print(f"\n✅ Successfully assigned secondary elements in {backtrack_iterations} iterations.")
-                break
+                print(
+                    f"\n✅ Successfully assigned secondary elements in {backtrack_iterations} iterations."
+                )
+                success = True
+                return grid
             else:
-                print(f"\n⚠️ Backtracking failed on attempt {iterations + 1}. Retrying...")
+                print(
+                    f"\n⚠️ Backtracking failed on attempt {iterations + 1}. Retrying..."
+                )
                 # Reset grid and state for another attempt
-                grid = [[None for _ in range(self.grid_size)] for _ in range(self.grid_size)]
+                grid = [
+                    [None for _ in range(self.grid_size)] for _ in range(self.grid_size)
+                ]
                 secondary_inventory_map = self.__get_secondary_elements_inventory(
                     primary_element_map
                 )
-                empty_cells_by_p_elem, empty_cells = self.__get_empty_s_elem_cells(grid, cell_primary_element_map, secondary_inventory_map)
-                s_elem_domains = self.__get_cell_s_elem_domains(empty_cells, grid, neighbour_map)
+                empty_cells_by_p_elem, empty_cells = self.__get_empty_s_elem_cells(
+                    grid, cell_primary_element_map, secondary_inventory_map
+                )
+                s_elem_domains = self.__get_cell_s_elem_domains(
+                    empty_cells, grid, neighbour_map
+                )
                 backtrack_iterations = 0
                 iterations += 1
+
+        if not success:
+            print(
+                f"\n❌ Failed to assign secondary elements after {iterations} attempts and {backtrack_iterations} backtracking iterations."
+            )
+
+        print("⚠️ Returning the best-effort grid (may contain unfilled cells).")
         return grid
