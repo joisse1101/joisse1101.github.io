@@ -34,18 +34,17 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         const filename = 'grid_data.csv';
         const csvData = gridInput.map((row) => row.map((cell) => cell.toString()));
         downloadGridCSV(csvData, filename);
-    }
+    };
 
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (!file) return;
-        if (!gridSize) return;
+        if (!file || !gridSize) return;
 
         const reader = new FileReader();
         reader.onload = (e) => {
             const content = e.target?.result as string;
             if (content) {
-                const parsedData = parseGridCSV(content, gridSize); // Use your parseGridCSV function
+                const parsedData = parseGridCSV(content, gridSize);
                 const cleanedData = parsedData.map((row) =>
                     row.map((cell) => {
                         const num = parseInt(cell);
@@ -57,8 +56,6 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         };
 
         reader.readAsText(file);
-
-        // Reset input value so the same file can be selected twice in a row
         event.target.value = '';
     };
 
@@ -73,16 +70,20 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         setGridInput(clearedGrid);
     };
 
-    const isDesktop = useMediaQuery(600); // Adjust the breakpoint as needed
+    const isDesktop = useMediaQuery(600);
     const isGridEmpty = gridInput.every((row) => row.every((cell) => cell === ''));
 
     return (
         <>
             <div className='btn-container'>
-                <div className='btn-wrapper' onClick={handleClearGrid}>
-                    <input type="file" ref={fileInputRef}
+                <div className='btn-wrapper'>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
                         accept=".csv,text/csv,text/plain,application/csv,text/comma-separated-values"
-                        onChange={handleFileUpload} style={{ display: 'none' }} />
+                        onChange={handleFileUpload}
+                        style={{ display: 'none' }}
+                    />
                     <button className='btn btn-primary' onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
                         Upload Grid
                     </button>
