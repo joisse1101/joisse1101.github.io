@@ -10,7 +10,7 @@ import { useMediaQuery } from '@hooks/display';
 declare global {
     interface Window {
         generateGrannySquare?: (gridSize: number, colors: string[], numPatterns: number, patternGrid?: (number | undefined)[][]) => Promise<{ colourGrid: string[][]; patternGrid: string[][] }>;
-        addLogs: (log: string[]) => void;
+        addLogs?: (log: string[]) => void;
     }
 }
 
@@ -41,7 +41,6 @@ export default function GrannySquare() {
 
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
-    4
     const [grannyGridState, setGrannyGridState] = useState<GrannyGridState>(defaultGrannyGridState);
 
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
@@ -70,10 +69,15 @@ export default function GrannySquare() {
             document.removeEventListener('py-app-ready', handleAppReady);
             pyScript.remove();
             delete window.generateGrannySquare;
+            delete window.addLogs;
         };
     }, []);
 
     const handleClearGrid = () => {
+        if (isNaN(parseInt(gridSize, 10)) || parseInt(gridSize, 10) <= 0) {
+            setErrors([`Invalid grid size. Please enter a positive integer between 0 and ${maxGridSize}.`]);
+            return;
+        }
         const clearedGrid = Array.from({ length: parseInt(gridSize, 10) }, () =>
             Array.from({ length: parseInt(gridSize, 10) }, () => '')
         );
@@ -113,7 +117,7 @@ export default function GrannySquare() {
         if (parseInt(gridSize, 10) > 0 && parseInt(numPatterns, 10) > 0 && colors.length > 0) {
             if (window.generateGrannySquare) {
                 setGenerationLogs(['Generating granny square...']);
-                
+
                 const result = await window.generateGrannySquare(
                     parseInt(gridSize, 10),
                     colors,
@@ -222,17 +226,21 @@ export default function GrannySquare() {
                     <div className="form-group">
                         <label htmlFor="gridSize">Grid Size</label>
                         <input type="number" id="gridSize" value={gridSize}
-                            onChange={(e) => {
-                                setGridSize(e.target.value)
-                                handleClearGrid(); // Clear the pattern grid when grid size changes
+                            onBlur={(e) => {
+                                if (e.target.value != gridSize) {
+                                    setGridSize(e.target.value)
+                                    handleClearGrid();
+                                }
                             }}
                             disabled={isLoading} />
                     </div>
                     <div className="form-group">
                         <label htmlFor="numPatterns">Number of Patterns</label>
-                        <input type="number" id="numPatterns" value={numPatterns} onChange={(e) => {
-                            setNumPatterns(e.target.value)
-                            handleClearGrid(); // Clear the pattern grid when number of patterns changes
+                        <input type="number" id="numPatterns" value={numPatterns} onBlur={(e) => {
+                            if (e.target.value != numPatterns) {
+                                setNumPatterns(e.target.value)
+                                handleClearGrid();
+                            }
                         }} disabled={isLoading} />
                     </div>
                     <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
