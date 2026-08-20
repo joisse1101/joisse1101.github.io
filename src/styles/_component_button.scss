@@ -1,87 +1,149 @@
 @use 'variables' as *;
 
+// --- Base Button Component ---
+button,
 .btn {
+  all: unset;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: $font-sm;         // 0.875rem / 14px
-  font-weight: 600;            //
-  line-height: 1.25;           //
-  border: 1px solid transparent; //
-  border-radius: $radius-sm;   // 0.375rem / 6px
+  gap: 0.5rem;
+  
+  // Default Size (Medium)
+  min-height: $btn-size-md-height;
+  padding: $btn-padding-md;
+  
+  font-family: $btn-font-family;
+  font-size: $font-sm;
+  font-weight: $btn-font-weight;
+  line-height: $btn-line-height;
+  text-decoration: none;
+  white-space: nowrap;
+  text-shadow: $shadow-text-sm;
+  
+  border-radius: $radius-md;
+  border: 1px solid transparent;
   cursor: pointer;
   user-select: none;
-  text-decoration: none;
+  
   transition: 
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;         //
+    background-color $transition-speed ease,
+    border-color $transition-speed ease,
+    color $transition-speed ease,
+    box-shadow $transition-speed ease,
+    transform 0.1s ease;
 
-  // Focus Ring
+  // Active click physics
+  &:active:not(:disabled):not(.is-disabled) {
+    transform: scale(0.98);
+  }
+
+  // Accessibility Focus Ring
   &:focus-visible {
     outline: none;
-    box-shadow: $shadow-focus-ring; // 0 0 0 3px rgba(232, 162, 184, 0.25)
-    border-color: $border-focus;     // #f2a9c4
+    box-shadow: $shadow-focus-ring;
+    border-color: $border-focus;
   }
 
-  // --- Variants ---
-
-  // Primary Action Button
+  // --- Primary Variant (Default Fallback) ---
+  &,
   &-primary {
-    background-color: $brand-accent; // #e8a2b8
-    color: $bg-main;                 // #121214
-
-    &:hover:not(:disabled) {
-      background-color: $brand-hover; // #f2a9c4
-      box-shadow: $shadow-glow;       // 0 0 20px -3px rgba(232, 162, 184, 0.3)
+    background-color: $btn-primary-bg;
+    color: $btn-primary-text;
+    border-color: $btn-primary-border;
+    
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-primary-hover-bg;
+      box-shadow: $shadow-glow;
     }
 
-    &:active:not(:disabled) {
-      background-color: $brand-active; // #d687a0
+    &:active:not(:disabled):not(.is-disabled) {
+      background-color: $btn-primary-active-bg;
     }
   }
 
-  // Secondary Button
+  // --- Secondary Variant ---
   &-secondary {
-    background-color: $bg-surface-hover; // #26262b
-    color: $text-main;                   // #ffffff
-    border-color: $border-subtle;        // #27272a
+    background-color: $btn-secondary-bg;
+    color: $btn-secondary-text;
+    border-color: $btn-secondary-border;
 
-    &:hover:not(:disabled) {
-      background-color: $bg-overlay;     // #2d2d34
-      border-color: $border-color;       // #3f3f46
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-secondary-hover-bg;
+      border-color: $btn-secondary-hover-border;
+      color: $text-main;
     }
   }
 
-  // Danger / Destructive Action Button
+  // --- Ghost / Minimal Variant ---
+  &-ghost {
+    background-color: $btn-ghost-bg;
+    color: $btn-ghost-text;
+
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-ghost-hover-bg;
+      color: $btn-ghost-hover-text;
+    }
+  }
+
+  // --- Danger / Destructive Variant ---
   &-danger {
-    background-color: rgba($color-danger, 0.15); // #f87171 @ 15%
-    color: $color-danger;                        // #f87171
-    border-color: rgba($color-danger, 0.3);      // #f87171 @ 30%
+    background-color: $btn-danger-bg;
+    color: $btn-danger-text;
+    border-color: $btn-danger-border;
 
-    &:hover:not(:disabled) {
-      background-color: rgba($color-danger, 0.3);
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-hover-bg;
     }
 
-    &:active:not(:disabled) {
-      background-color: rgba($color-danger, 0.45);
+    &:active:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-active-bg;
     }
+  }
+
+  // --- Sizing Modifiers ---
+  &-sm {
+    min-height: $btn-size-sm-height;
+    padding: $btn-padding-sm;
+    font-size: $font-xs;
+    border-radius: $radius-sm;
+  }
+
+  &-lg {
+    min-height: $btn-size-lg-height;
+    padding: $btn-padding-lg;
+    font-size: $font-base;
+    border-radius: $radius-lg;
+  }
+
+  // Layout modifier (full width)
+  &-block {
+    width: 100%;
   }
 
   // --- Disabled State ---
   &:disabled,
   &.is-disabled {
-    background-color: $disabled-bg !important;   // #27272a
-    color: $disabled-text !important;             // #71717a
+    background-color: $disabled-bg !important;
+    color: $disabled-text !important;
     border-color: transparent !important;
-    opacity: 0.6;                                 //
-    cursor: not-allowed;                          //
-    pointer-events: none;                         //
-    box-shadow: none !important;                  //
-    transform: none !important;                   //
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+
+.btn-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  width: 100%;
+  .btn-wrapper {
+    display: flex;
+    gap: 0.5rem;
   }
 }
