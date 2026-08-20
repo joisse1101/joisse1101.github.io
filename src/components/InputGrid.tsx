@@ -11,6 +11,7 @@ export interface InputGridProps {
     maxInput: number;
 }
 
+const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
 const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
 
 export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, gridSize, maxInput }) => {
@@ -84,7 +85,7 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                         Upload Grid
                     </button>
                     {!isGridEmpty && (
-                        <button className='btn btn-secondary' onClick={downloadGridAsCSV}>
+                        <button className='btn btn-secondary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP}>
                             Download Grid
                         </button>
                     )}
