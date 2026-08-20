@@ -33,10 +33,21 @@ $input-focus-border: $border-focus; // Focus state border (Warm Rose / Indigo ac
 $input-focus-ring: rgba($border-focus, 0.25);
 
 // --- Brand & Accents (Accessible Warm Rose) ---
-$brand-accent: #e8a2b8;    // Primary Rose Accent
-$brand-hover: #f2a9c4;     // Hover state (brighter for visibility)
-$brand-active: #d687a0;    // Active/pressed state
-$accent-pink-soft: #fce7f3; // Extra light accent fill
+$brand-accent: #e8a2b8;        // Primary Rose Accent
+$brand-hover: #ecb4c8;         // Hover state (brighter for visibility)
+$brand-active: #d687a0;        // Active/pressed state
+
+// --- Borders & Rules ---
+$brand-border-muted: #f0c3d0;  // Subtle/default border (low contrast)
+$brand-border-strong: #925265; // Prominent border or focused input rings
+
+// --- Soft Fills & Backgrounds ---
+$accent-pink-soft: #fce7f3;    // Extra light accent fill
+$brand-surface-subtle: #fdf2f6; // Ultra-soft container or badge background
+
+// --- Text & Contrast ---
+$brand-text-dark: #6e2e43;     // High-contrast text on soft pink backgrounds
+$brand-disabled: #edd6dd;      // Disabled button states & subtle icons
 
 // --- Feedback / State Colors ---
 $color-success: #34d399;   // Mint Green
@@ -45,6 +56,47 @@ $color-danger: #f87171;    // Soft Coral
 $color-info: #38bdf8;      // Sky Blue
 $disabled-bg: #27272a;        // Soft dark gray matching $border-subtle
 $disabled-text: $text-dim;    // Tertiary text color
+
+// --- Button Specific Tokens ---
+$btn-font-family: $font-family-body;
+$btn-font-weight: 600;
+$btn-line-height: 1.25;
+
+// Heights & Sizes
+$btn-size-sm-height: 2rem;      // 32px
+$btn-size-md-height: 2.5rem;    // 40px
+$btn-size-lg-height: 3rem;      // 48px
+
+$btn-padding-sm: 0.375rem 0.75rem;
+$btn-padding-md: 0.625rem 1.25rem;
+$btn-padding-lg: 0.875rem 1.5rem;
+
+// Brand Accent Variants (Primary)
+$btn-primary-bg: $brand-accent;
+$btn-primary-text: $text-main;
+$btn-primary-border: $brand-border-strong;
+$btn-primary-hover-bg: $brand-hover;
+$btn-primary-active-bg: $brand-active;
+
+// Secondary Variants
+$btn-secondary-bg: $bg-surface;
+$btn-secondary-text: $text-main;
+$btn-secondary-border: $border-subtle;
+$btn-secondary-hover-bg: $bg-surface-hover;
+$btn-secondary-hover-border: $border-color;
+
+// Ghost / Subtle Variant
+$btn-ghost-bg: transparent;
+$btn-ghost-text: $text-muted;
+$btn-ghost-hover-bg: rgba($bg-surface-hover, 0.6);
+$btn-ghost-hover-text: $text-main;
+
+// Danger Variants
+$btn-danger-bg: rgba($color-danger, 0.12);
+$btn-danger-text: $color-danger;
+$btn-danger-border: rgba($color-danger, 0.25);
+$btn-danger-hover-bg: rgba($color-danger, 0.25);
+$btn-danger-active-bg: rgba($color-danger, 0.4);
 
 // --- Typography Specs ---
 $font-xs: 0.625rem;        // 10px
@@ -76,7 +128,8 @@ $shadow-glow-md: 0 0 8px -3px rgba(232, 162, 184, 0.3);
 $shadow-glow: 0 0 20px -3px rgba(232, 162, 184, 0.3);
 $shadow-focus-ring: 0 0 0 3px rgba(232, 162, 184, 0.25);
 $shadow-hover-glow: 0 0 8px rgba(255, 255, 255, 0.15);
-$shadow-text: 0 0 3px rgba(0, 0, 0, 0.9);
+$shadow-text-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+$shadow-text: 0 2px 3px rgba(0, 0, 0, 0.5);
 
 // --- Card & Form Specific Spacing ---
 $card-padding-sm: 1rem;
@@ -131,7 +184,15 @@ $max-width: 1200px;
   --brand-accent: #{$brand-accent};
   --brand-hover: #{$brand-hover};
   --brand-active: #{$brand-active};
+
+  --brand-border-muted: #{$brand-border-muted};
+  --brand-border-strong: #{$brand-border-strong};
+
   --accent-pink-soft: #{$accent-pink-soft};
+  --brand-surface-subtle: #{$brand-surface-subtle};
+
+  --brand-text-dark: #{$brand-text-dark};
+  --brand-disabled: #{$brand-disabled};
 
   /* Feedback */
   --color-success: #{$color-success};
@@ -140,6 +201,41 @@ $max-width: 1200px;
   --color-info: #{$color-info};
   --disabled-bg: #{$disabled-bg};
   --disabled-text: #{$disabled-text};
+  
+  /* Buttons */
+  --btn-font-family: #{$btn-font-family};
+  --btn-font-weight: #{$btn-font-weight};
+  --btn-line-height: #{$btn-line-height};
+
+  --btn-size-sm-height: #{$btn-size-sm-height};
+  --btn-size-md-height: #{$btn-size-md-height};
+  --btn-size-lg-height: #{$btn-size-lg-height};
+
+  --btn-padding-sm: #{$btn-padding-sm};
+  --btn-padding-md: #{$btn-padding-md};
+  --btn-padding-lg: #{$btn-padding-lg};
+
+  --btn-primary-bg: #{$btn-primary-bg};
+  --btn-primary-text: #{$btn-primary-text};
+  --btn-primary-hover-bg: #{$btn-primary-hover-bg};
+  --btn-primary-active-bg: #{$btn-primary-active-bg};
+
+  --btn-secondary-bg: #{$btn-secondary-bg};
+  --btn-secondary-text: #{$btn-secondary-text};
+  --btn-secondary-border: #{$btn-secondary-border};
+  --btn-secondary-hover-bg: #{$btn-secondary-hover-bg};
+  --btn-secondary-hover-border: #{$btn-secondary-hover-border};
+
+  --btn-ghost-bg: #{$btn-ghost-bg};
+  --btn-ghost-text: #{$btn-ghost-text};
+  --btn-ghost-hover-bg: #{$btn-ghost-hover-bg};
+  --btn-ghost-hover-text: #{$btn-ghost-hover-text};
+
+  --btn-danger-bg: #{$btn-danger-bg};
+  --btn-danger-text: #{$btn-danger-text};
+  --btn-danger-border: #{$btn-danger-border};
+  --btn-danger-hover-bg: #{$btn-danger-hover-bg};
+  --btn-danger-active-bg: #{$btn-danger-active-bg};
 
   /* Sizes */
   --font-xs: #{$font-xs};
