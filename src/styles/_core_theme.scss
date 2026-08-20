@@ -162,3 +162,10 @@ main, section {
     box-shadow: $shadow-glow;
   }
 }
+
+.error-messages {
+  .error-message {
+    color: $color-danger;
+    font-size: $font-sm;
+  }
+}
