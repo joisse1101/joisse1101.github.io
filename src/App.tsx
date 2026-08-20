@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import './styles/main.scss';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
@@ -7,15 +7,15 @@ import GrannySquare from './pages/projects/GrannySquare';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Parent route using the layout */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           {/* <Route path="about" element={<About />} /> */}
-          <Route path="projects/granny-square" element={<GrannySquare />} />
+          <Route path="/projects/granny-square" element={<GrannySquare />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
