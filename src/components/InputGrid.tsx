@@ -80,7 +80,9 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         <>
             <div className='btn-container'>
                 <div className='btn-wrapper' onClick={handleClearGrid}>
-                    <input type="file" ref={fileInputRef} accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} />
+                    <input type="file" ref={fileInputRef}
+                        accept=".csv,text/csv,text/plain,application/csv,text/comma-separated-values"
+                        onChange={handleFileUpload} style={{ display: 'none' }} />
                     <button className='btn btn-primary' onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
                         Upload Grid
                     </button>
