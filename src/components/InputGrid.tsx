@@ -98,19 +98,19 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                     </button>
                 )}
             </div>
-            {isDesktop && (
-                <div
-                    className="granny-grid"
-                    style={{
-                        '--grid-size': gridSize,
-                    } as React.CSSProperties}
-                >
-                    {gridInput.map((row, rowIdx) =>
-                        row.map((value, colIdx) => {
-                            const cellKey = `${rowIdx}-${colIdx}`;
+            <div
+                className="granny-grid"
+                style={{
+                    '--grid-size': gridSize,
+                } as React.CSSProperties}
+            >
+                {gridInput.map((row, rowIdx) =>
+                    row.map((value, colIdx) => {
+                        const cellKey = `${rowIdx}-${colIdx}`;
 
-                            return (
-                                <div key={cellKey} className="grid-cell">
+                        return (
+                            <div key={cellKey} className="grid-cell">
+                                {isDesktop ? (
                                     <input
                                         className="no-spinner"
                                         type="number"
@@ -121,12 +121,14 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                                             handleInputChange(rowIdx, colIdx, e.target.value)
                                         }
                                     />
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-            )}
+                                ) : (
+                                    <div>{value}</div>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
+            </div>
         </>
     );
 };
