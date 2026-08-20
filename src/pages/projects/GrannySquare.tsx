@@ -9,7 +9,7 @@ import { InputGrid } from '../../components/InputGrid';
 declare global {
     interface Window {
         generateGrannySquare?: (gridSize: number, colors: string[], numPatterns: number, patternGrid?: (number | undefined)[][]) => Promise<{ colourGrid: string[][]; patternGrid: string[][] }>;
-        setGenerationLogs?: (logs: string[]) => void;
+        addLogs: (log: string[]) => void;
     }
 }
 
@@ -40,6 +40,11 @@ export default function GrannySquare() {
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
 
     useEffect(() => {
+        window.addLogs = (log: string[]) => {
+            const newLogs = Array.from(log);
+            setGenerationLogs((prevLogs) => [...prevLogs, ...newLogs]);
+        };
+
         const handleAppReady = () => {
             console.log('PyScript environment fully loaded!');
             setIsLoading(false);
@@ -73,6 +78,7 @@ export default function GrannySquare() {
 
         if (gridSize > 0 && numPatterns > 0 && colors.length > 0) {
             if (window.generateGrannySquare) {
+                setGenerationLogs(['Generating granny square...']);
 
                 const result = await window.generateGrannySquare(
                     gridSize,
@@ -97,7 +103,7 @@ export default function GrannySquare() {
                 setIsOutputDisabled(false);
                 setActiveTab('output-tab');
             } else {
-                setGenerationLogs(['something went wrong.', 'generateGrannySquare function is not available on window.']);
+                setGenerationLogs(['Something went wrong.', 'generateGrannySquare function is not available on window.']);
             }
         }
 
