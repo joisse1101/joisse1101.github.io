@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ColorPalettePicker } from '../../components/ColourPalettePicker';
-import { Tabs, type TabItem } from '../../components/Tabs';
-import { GrannyGrid } from '../../components/GrannyGrid';
-import { PaletteDisplay } from '../../components/PaletteDisplay';
-import { InputGrid } from '../../components/InputGrid';
-import { useMediaQuery } from '../../hooks/display';
+import { ColorPalettePicker } from '@components/ColourPalettePicker';
+import { Tabs, type TabItem } from '@components/Tabs';
+import { GrannyGrid } from '@components/GrannyGrid';
+import { PaletteDisplay } from '@components/PaletteDisplay';
+import { InputGrid } from '@components/InputGrid';
+import { useMediaQuery } from '@hooks/display';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
