@@ -36,13 +36,26 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         downloadGridCSV(csvData, filename);
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file || !gridSize) return;
+    const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        window.addLogs(['File upload initiated.']);
+        const input = event.target;
+        const file = input.files?.[0];
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target?.result as string;
+        window.addLogs([`File selected: ${file?.name || 'No file selected'}`]);
+
+        if (!file || !gridSize) {
+            input.value = '';
+            return;
+        }
+
+        try {
+            window.addLogs(['Reading file using file.text()...']);
+
+            // .text() streams the file content as a Promise, avoiding Android URI permission timeouts
+            const content = await file.text();
+
+            window.addLogs(['File content read successfully.']);
+
             if (content) {
                 const parsedData = parseGridCSV(content, gridSize);
                 const cleanedData = parsedData.map((row) =>
@@ -53,10 +66,12 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                 );
                 setGridInput(cleanedData);
             }
-        };
-
-        reader.readAsText(file);
-        event.target.value = '';
+        } catch (error) {
+            window.addLogs([`Error reading file: ${error}`]);
+        } finally {
+            // Clear the input value AFTER async reading completes entirely
+            input.value = '';
+        }
     };
 
     const handleUploadButtonClick = () => {
