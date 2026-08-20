@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useRef, type ChangeEvent } from 'react';
+import { downloadGridCSV, parseGridCSV } from '../utils/csv';
+import { useMediaQuery } from '../hooks/display';
 
 export type CellColour = string | [string, string];
 
@@ -9,8 +11,10 @@ export interface InputGridProps {
     maxInput: number;
 }
 
+const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
+
 export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, gridSize, maxInput }) => {
-    // Create distinct sub-arrays for each row
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleInputChange = (rowIdx: number, colIdx: number, value: string) => {
         if (value) {
@@ -25,6 +29,42 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         );
     };
 
+    const downloadGridAsCSV = () => {
+        const filename = 'grid_data.csv';
+        const csvData = gridInput.map((row) => row.map((cell) => cell.toString()));
+        downloadGridCSV(csvData, filename);
+    }
+
+    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!gridSize) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target?.result as string;
+            if (content) {
+                const parsedData = parseGridCSV(content, gridSize); // Use your parseGridCSV function
+                const cleanedData = parsedData.map((row) =>
+                    row.map((cell) => {
+                        const num = parseInt(cell);
+                        return isNaN(num) ? '' : Math.min(Math.max(num, 0), maxInput).toString();
+                    })
+                );
+                setGridInput(cleanedData);
+            }
+        };
+
+        reader.readAsText(file);
+
+        // Reset input value so the same file can be selected twice in a row
+        event.target.value = '';
+    };
+
+    const handleUploadButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
     const handleClearGrid = () => {
         const clearedGrid = Array.from({ length: gridSize }, () =>
             Array.from({ length: gridSize }, () => '')
@@ -32,38 +72,58 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
         setGridInput(clearedGrid);
     };
 
+    const isDesktop = useMediaQuery(600); // Adjust the breakpoint as needed
+    const isGridEmpty = gridInput.every((row) => row.every((cell) => cell === ''));
+
     return (
         <>
-            <button className='btn btn-danger' onClick={handleClearGrid}>
-                Clear Grid
-            </button>
-            <div
-                className="granny-grid"
-                style={{
-                    '--grid-size': gridSize,
-                } as React.CSSProperties}
-            >
-                {gridInput.map((row, rowIdx) =>
-                    row.map((value, colIdx) => {
-                        const cellKey = `${rowIdx}-${colIdx}`;
-
-                        return (
-                            <div key={cellKey} className="grid-cell">
-                                <input
-                                    className="no-spinner"
-                                    type="number"
-                                    min={0}
-                                    max={maxInput}
-                                    value={value}
-                                    onChange={(e) =>
-                                        handleInputChange(rowIdx, colIdx, e.target.value)
-                                    }
-                                />
-                            </div>
-                        );
-                    })
+            <div className='btn-container'>
+                <div className='btn-wrapper' onClick={handleClearGrid}>
+                    <input type="file" ref={fileInputRef} accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} />
+                    <button className='btn btn-primary' onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
+                        Upload Grid
+                    </button>
+                    {!isGridEmpty && (
+                        <button className='btn btn-secondary' onClick={downloadGridAsCSV}>
+                            Download Grid
+                        </button>
+                    )}
+                </div>
+                {isDesktop && (
+                    <button className='btn btn-danger' onClick={handleClearGrid}>
+                        Clear Grid
+                    </button>
                 )}
             </div>
+            {isDesktop && (
+                <div
+                    className="granny-grid"
+                    style={{
+                        '--grid-size': gridSize,
+                    } as React.CSSProperties}
+                >
+                    {gridInput.map((row, rowIdx) =>
+                        row.map((value, colIdx) => {
+                            const cellKey = `${rowIdx}-${colIdx}`;
+
+                            return (
+                                <div key={cellKey} className="grid-cell">
+                                    <input
+                                        className="no-spinner"
+                                        type="number"
+                                        min={0}
+                                        max={maxInput}
+                                        value={value}
+                                        onChange={(e) =>
+                                            handleInputChange(rowIdx, colIdx, e.target.value)
+                                        }
+                                    />
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            )}
         </>
     );
 };
