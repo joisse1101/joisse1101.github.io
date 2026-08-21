@@ -9,11 +9,11 @@ button,
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  
+
   // Default Size (Medium)
   min-height: $btn-size-md-height;
   padding: $btn-padding-md;
-  
+
   font-family: $btn-font-family;
   font-size: $font-sm;
   font-weight: $btn-font-weight;
@@ -21,13 +21,13 @@ button,
   text-decoration: none;
   white-space: nowrap;
   text-shadow: $shadow-text-sm;
-  
+
   border-radius: $radius-md;
   border: 1px solid transparent;
   cursor: pointer;
   user-select: none;
-  
-  transition: 
+
+  transition:
     background-color $transition-speed ease,
     border-color $transition-speed ease,
     color $transition-speed ease,
@@ -52,14 +52,16 @@ button,
     background-color: $btn-primary-bg;
     color: $btn-primary-text;
     border-color: $btn-primary-border;
-    
+
     &:hover:not(:disabled):not(.is-disabled) {
       background-color: $btn-primary-hover-bg;
       box-shadow: $shadow-glow;
+      border-color: $btn-primary-hover-border;
     }
 
     &:active:not(:disabled):not(.is-disabled) {
       background-color: $btn-primary-active-bg;
+      border-color: $btn-primary-active-border;
     }
   }
 
@@ -99,6 +101,20 @@ button,
 
     &:active:not(:disabled):not(.is-disabled) {
       background-color: $btn-danger-active-bg;
+    }
+  }
+
+  &-danger-outline {
+    background-color: transparent;
+    color: $btn-danger-text;
+    border-color: $btn-danger-border;
+
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-outline-hover-bg;
+    }
+
+    &:active:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-outline-active-bg;
     }
   }
 
@@ -142,17 +158,29 @@ button,
   gap: 0.75rem;
   justify-content: space-between;
   width: 100%;
+
   @media (max-width: 600px) {
     flex-direction: column;
     gap: 0.5rem;
   }
+
   .btn-wrapper {
+    align-items: flex-end;
     display: flex;
     gap: 0.5rem;
 
     @media (max-width: 600px) {
-      flex-direction: column;
+      // flex-direction: column;
+      // justify-content: space-between;
       width: 100%;
+
+      .btn {
+        flex: 1;
+      }
     }
   }
+}
+
+.btn-container-right {
+  justify-content: flex-end;
 }

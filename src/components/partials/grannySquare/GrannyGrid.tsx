@@ -1,4 +1,4 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 interface CustomCSSProperties extends React.CSSProperties {
     [key: `--${string}`]: string | number;
@@ -11,6 +11,8 @@ export interface GrannyGridProps {
     colourGrid: CellColour[][];
     patternGrid: string[][];
     highlightedColour: string | null;
+    lockedCells: Record<string, boolean>;
+    handleCellLockToggle: (cellKey: string) => void;
 }
 
 export const GrannyGrid: React.FC<GrannyGridProps> = ({
@@ -18,6 +20,8 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
     colourGrid,
     patternGrid,
     highlightedColour,
+    lockedCells,
+    handleCellLockToggle,
 }) => {
     const [animatedCells, setAnimatedCells] = useState<Record<string, boolean>>({});
 
@@ -31,6 +35,7 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
 
     return (
         <>
+            
             <div
                 className={`granny-grid ${highlightedColour ? 'has-highlight' : ''}`}
                 style={{ '--grid-size': gridSize } as React.CSSProperties}
@@ -40,6 +45,7 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
                         const cellKey = `${rowIdx}-${colIdx}`;
                         const pattern = patternGrid[rowIdx]?.[colIdx] ?? '';
                         const isAnimationDone = animatedCells[cellKey];
+                        const isLocked = lockedCells[cellKey] || false;
 
                         return (
                             <GridCell
@@ -51,19 +57,13 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
                                 cellKey={cellKey}
                                 delay={(rowIdx + colIdx) * 0.05}
                                 isAnimationDone={isAnimationDone}
+                                isLocked={isLocked}
+                                onClick={() => handleCellLockToggle(cellKey)}
                             />
                         );
                     })
                 )}
             </div>
-            {/* <div>
-                <h5>Legend:</h5>
-                <ul>
-                    <li><strong>Mix:</strong> Cells with a gradient of two colors.</li>
-                    <li><strong>Single Color:</strong> Cells with a solid color.</li>
-                    <li><strong>Highlighted:</strong> Cells that match the selected color in the palette.</li>
-                </ul>
-            </div> */}
         </>
     );
 };
@@ -76,7 +76,9 @@ const GridCell: React.FC<{
     cellKey: string;
     delay: number;
     isAnimationDone: boolean;
-}> = ({ colourList, pattern, highlightedColour, handleAnimationEnd, cellKey, delay, isAnimationDone }) => {
+    isLocked: boolean;
+    onClick: () => void;
+}> = memo(({ colourList, pattern, highlightedColour, handleAnimationEnd, cellKey, delay, isAnimationDone, isLocked, onClick }) => {
 
     const isMix = Array.isArray(colourList) && colourList.length === 2;
     let cellStyle: CustomCSSProperties = {};
@@ -111,20 +113,21 @@ const GridCell: React.FC<{
         'grid-cell',
         !isAnimationDone ? 'animated-cell' : '',
         isHighlighted ? 'is-highlighted' : '',
+        isLocked ? 'is-locked' : '',
     ]
         .filter(Boolean)
         .join(' ');
 
     return (
         <div
-            key={cellKey}
             className={classNames}
             style={cellStyle}
             data-colour={colourAttr}
             title={`${colourTitle}\nPattern: ${pattern}`}
             onAnimationEnd={() => handleAnimationEnd(cellKey)}
+            onClick={onClick}
         >
             {pattern}
         </div>
     );
-};
+});

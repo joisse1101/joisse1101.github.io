@@ -3,14 +3,17 @@
 /* ==========================================
    Base Reset & Document Defaults
    ========================================== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
-  scrollbar-gutter: auto;
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
   color-scheme: dark;
+  scroll-padding-top: 10px; // For smooth scroll alignment with fixed headers
 }
 
 body {
@@ -31,8 +34,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 main {
-  flex: 1; 
+  flex: 1;
   width: 100%;
   max-width: $max-width;
   margin: 0 auto;
@@ -43,9 +47,11 @@ main {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: $bg-main;
 }
+
 ::-webkit-scrollbar-thumb {
   background: $border-color;
   border-radius: $radius-full;
@@ -58,7 +64,12 @@ main {
 /* ==========================================
    Typography Hierarchy
    ========================================== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: $font-family-display;
   color: $text-main;
   line-height: 1.25;
@@ -87,9 +98,11 @@ h3 {
 h4 {
   font-size: $font-lg;
 }
+
 h5 {
   font-size: $font-base;
 }
+
 h6 {
   font-size: $font-sm;
 }
@@ -105,7 +118,9 @@ p {
 }
 
 /* Inline Code & Block Code */
-code, kbd, pre {
+code,
+kbd,
+pre {
   font-family: $font-family-mono;
 }
 
@@ -150,7 +165,8 @@ a {
 /* ==========================================
    Layout Containers & Cards
    ========================================== */
-main, section {
+main,
+section {
   width: 100%;
   max-width: $max-width;
   margin: 0 auto;
@@ -178,4 +194,10 @@ main, section {
     color: $color-danger;
     font-size: $font-sm;
   }
+}
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }

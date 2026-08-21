@@ -1,103 +1,61 @@
-import React, { useRef, type ChangeEvent } from 'react';
-import { downloadGridCSV, parseGridCSV } from '@utils/csv';
+import React from 'react';
+import { downloadGridCSV } from '@utils/csv';
 import { useMediaQuery } from '@hooks/display';
+import { CLEAR_FILLED_CELLS_TOOLTIP, DOWNLOAD_INPUT_TOOLTIP, UNLOCK_CELLS_TOOLTIP, CLEAR_GRID_TOOLTIP } from '@/constants/grannySquareTooltips';
 
 export type CellColour = string | [string, string];
 
 export interface InputGridProps {
-    gridInput: string[][];
-    setGridInput: React.Dispatch<React.SetStateAction<string[][]>>;
-    gridSize: number; // Optional prop for grid size
+    filledCells: Record<string, string>;
+    setFilledCells: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+    gridSize: number;
     maxInput: number;
+    lockedCells: Record<string, boolean>;
+    handleClearGrid: () => void;
+    handleFillCell: (rowIndex: number, colIndex: number, value: string) => void;
+    handleClearFilled: () => void;
+    handleRemoveLocks: () => void;
 }
 
-const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
 
-export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, gridSize, maxInput }) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleInputChange = (rowIdx: number, colIdx: number, value: string) => {
-        if (value) {
-            value = Math.min(Math.max(parseInt(value), 0), maxInput).toString();
-        }
-        setGridInput((prevGrid) =>
-            prevGrid.map((row, r) =>
-                r === rowIdx
-                    ? row.map((cell, c) => (c === colIdx ? value : cell))
-                    : row
-            )
-        );
-    };
+export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell, handleClearFilled, handleRemoveLocks }) => {
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
-        const csvData = gridInput.map((row) => row.map((cell) => cell.toString()));
+        const csvData = Array.from({ length: gridSize }, (_, rowIdx) =>
+            Array.from({ length: gridSize }, (_, colIdx) => {
+                const cellKey = `${rowIdx}-${colIdx}`;
+                if (!filledCells[cellKey]) {
+                    return '';
+                }
+                return filledCells[cellKey].toString();
+            })
+        );
+
         downloadGridCSV(csvData, filename);
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file || !gridSize) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target?.result as string;
-            if (content) {
-                const parsedData = parseGridCSV(content, gridSize);
-                const cleanedData = parsedData.map((row) =>
-                    row.map((cell) => {
-                        const num = parseInt(cell);
-                        return isNaN(num) ? '' : Math.min(Math.max(num, 0), maxInput).toString();
-                    })
-                );
-                setGridInput(cleanedData);
-            }
-        };
-
-        reader.readAsText(file);
-        event.target.value = '';
-    };
-
-    const handleUploadButtonClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleClearGrid = () => {
-        const clearedGrid = Array.from({ length: gridSize }, () =>
-            Array.from({ length: gridSize }, () => '')
-        );
-        setGridInput(clearedGrid);
-    };
-
-    const isDesktop = useMediaQuery(600);
-    const isGridEmpty = gridInput.every((row) => row.every((cell) => cell === ''));
+    const isGridEmpty = Object.keys(filledCells).length === 0;
+    const isPhone = !useMediaQuery(600); // Use the custom hook to determine if the device is a phone
 
     return (
         <>
             <div className='btn-container'>
+                <button className='btn btn-primary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP} disabled={isGridEmpty}>
+                    Download Grid
+                </button>
                 <div className='btn-wrapper'>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept=".csv,text/csv,text/plain,application/csv,text/comma-separated-values"
-                        onChange={handleFileUpload}
-                        style={{ display: 'none' }}
-                    />
-                    <button className='btn btn-primary' onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
-                        Upload Grid
+                    <button className='btn btn-secondary' onClick={handleRemoveLocks} title={UNLOCK_CELLS_TOOLTIP}>
+                        Unlock Cells
                     </button>
-                    {!isGridEmpty && (
-                        <button className='btn btn-secondary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP}>
-                            Download Grid
-                        </button>
-                    )}
-                </div>
-                {isDesktop && (
-                    <button className='btn btn-danger' onClick={handleClearGrid}>
+                    <button className='btn btn-danger-outline' onClick={handleClearFilled} title={CLEAR_FILLED_CELLS_TOOLTIP}>
+                        Clear Unlocked Cells
+                    </button>
+                    <button className='btn btn-danger' onClick={handleClearGrid} title={CLEAR_GRID_TOOLTIP}>
                         Clear Grid
                     </button>
-                )}
+                </div>
+
             </div>
             <div
                 className="granny-grid"
@@ -105,30 +63,33 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                     '--grid-size': gridSize,
                 } as React.CSSProperties}
             >
-                {gridInput.map((row, rowIdx) =>
-                    row.map((value, colIdx) => {
-                        const cellKey = `${rowIdx}-${colIdx}`;
-
-                        return (
-                            <div key={cellKey} className="grid-cell">
-                                {isDesktop ? (
-                                    <input
-                                        className="no-spinner"
-                                        type="number"
-                                        min={0}
-                                        max={maxInput}
-                                        value={value}
-                                        onChange={(e) =>
-                                            handleInputChange(rowIdx, colIdx, e.target.value)
-                                        }
-                                    />
-                                ) : (
-                                    <div>{value}</div>
-                                )}
-                            </div>
-                        );
-                    })
-                )}
+                {Array.from({ length: gridSize }, (_, rowIdx) => (
+                    <React.Fragment key={rowIdx}>
+                        {Array.from({ length: gridSize }, (_, colIdx) => {
+                            const cellKey = `${rowIdx}-${colIdx}`;
+                            const cellValue = filledCells[cellKey];
+                            return (
+                                <div key={cellKey} className="grid-cell">
+                                    {!isPhone ? (
+                                        <input
+                                            className="no-spinner"
+                                            type="number"
+                                            min={0}
+                                            max={maxInput}
+                                            value={cellValue ?? ''}
+                                            onChange={(e) =>
+                                                handleFillCell(rowIdx, colIdx, e.target.value)
+                                            }
+                                            disabled={lockedCells[cellKey]}
+                                        />
+                                    ) : (
+                                        <div>{cellValue}</div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </React.Fragment>
+                ))}
             </div>
         </>
     );
