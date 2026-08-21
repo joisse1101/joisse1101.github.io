@@ -35,6 +35,7 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
 
     return (
         <>
+            
             <div
                 className={`granny-grid ${highlightedColour ? 'has-highlight' : ''}`}
                 style={{ '--grid-size': gridSize } as React.CSSProperties}

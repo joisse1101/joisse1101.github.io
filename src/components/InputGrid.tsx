@@ -1,6 +1,7 @@
 import React from 'react';
 import { downloadGridCSV } from '@utils/csv';
 import { useMediaQuery } from '@hooks/display';
+import { CLEAR_FILLED_CELLS_TOOLTIP, DOWNLOAD_INPUT_TOOLTIP, UNLOCK_CELLS_TOOLTIP, CLEAR_GRID_TOOLTIP } from '@/constants/grannySquareTooltips';
 
 export type CellColour = string | [string, string];
 
@@ -12,10 +13,12 @@ export interface InputGridProps {
     lockedCells: Record<string, boolean>;
     handleClearGrid: () => void;
     handleFillCell: (rowIndex: number, colIndex: number, value: string) => void;
+    handleClearFilled: () => void;
+    handleRemoveLocks: () => void;
 }
 
-const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell }) => {
+
+export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell, handleClearFilled, handleRemoveLocks }) => {
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
@@ -37,18 +40,20 @@ export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, max
 
     return (
         <>
-            <div className='btn-container btn-container-right'>
+            <div className='btn-container'>
+                <button className='btn btn-primary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP} disabled={isGridEmpty}>
+                    Download Grid
+                </button>
                 <div className='btn-wrapper'>
-                    {!isGridEmpty && (
-                        <button className='btn btn-secondary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP}>
-                            Download Grid
-                        </button>
-                    )}
-                    {isDesktop && (
-                        <button className='btn btn-danger' onClick={handleClearGrid}>
-                            Clear Grid
-                        </button>
-                    )}
+                    <button className='btn btn-secondary' onClick={handleRemoveLocks} title={UNLOCK_CELLS_TOOLTIP}>
+                        Unlock Cells
+                    </button>
+                    <button className='btn btn-danger-outline' onClick={handleClearFilled} title={CLEAR_FILLED_CELLS_TOOLTIP}>
+                        Clear Unlocked Cells
+                    </button>
+                    <button className='btn btn-danger' onClick={handleClearGrid} title={CLEAR_GRID_TOOLTIP}>
+                        Clear Grid
+                    </button>
                 </div>
 
             </div>

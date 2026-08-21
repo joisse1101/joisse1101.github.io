@@ -1,4 +1,5 @@
 import ColorPalettePicker from "@/components/ColourPalettePicker";
+import { UPLOAD_INPUT_TOOLTIP } from "@/constants/grannySquareTooltips";
 import { useMediaQuery } from "@/hooks/display";
 import type { GrannyGridState } from "@/hooks/useGrannySquare";
 import { parseGridCSV } from "@/utils/csv";
@@ -19,7 +20,7 @@ export interface ControlPanelProps {
     lockFilledCells: () => void;
 }
 
-const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the pattern grid.\nNumbers in the grid will be clamped between 1 and the specified maximum input value.';
+
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
     gridSize,
