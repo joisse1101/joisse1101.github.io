@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tabs, type TabItem } from '@components/Tabs';
 import { GrannyGrid } from '@/components/partials/grannySquare/GrannyGrid';
 import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDisplay';
 import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
 import { InputGrid } from '@/components/InputGrid';
+import { useGrannySquare } from '@/hooks/useGrannySquare';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
@@ -13,34 +14,30 @@ declare global {
     }
 }
 
-export type GrannyGridState = {
-    gridSize: number;
-    colourGrid: string[][];
-    patternGrid: string[][];
-    palette: string[];
-};
-const defaultGrannyGridState: GrannyGridState = {
-    gridSize: 0,
-    colourGrid: [],
-    patternGrid: [],
-    palette: [],
-};
-
 export default function GrannySquare() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [generationLogs, setGenerationLogs] = useState<string[]>([]);
 
-
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
-    const [grannyGridState, setGrannyGridState] = useState<GrannyGridState>(defaultGrannyGridState);
-    const [lockedCells, setLockedCells] = useState<Record<string, boolean>>({});
-    const [filledCells, setFilledCells] = useState<Record<string, string>>({});
-    const [gridSize, setGridSize] = useState<string>('18');
-    const [numPatterns, setNumPatterns] = useState<string>('6');
-
+    
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
+    
+    const {
+        grannyGridState,
+        setGrannyGridState,
+        lockedCells,
+        filledCells,
+        setFilledCells,
+        gridSize,
+        setGridSize,
+        numPatterns,
+        setNumPatterns,
+        handleCellLockToggle,
+        lockFilledCells,
+        handleClearGrid,
+    } = useGrannySquare();
 
     useEffect(() => {
         window.addLogs = (log: string[]) => {
@@ -49,7 +46,6 @@ export default function GrannySquare() {
         };
 
         const handleAppReady = () => {
-            console.log('PyScript environment fully loaded!');
             setIsLoading(false);
         };
 
@@ -81,33 +77,6 @@ export default function GrannySquare() {
     };
 
     const isPatternGridEmpty = Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0;
-
-    const handleCellLockToggle = (cellKey: string) => {
-        const [rowIndex, colIndex] = cellKey.split('-').map((index) => parseInt(index, 10));
-        console.log(`Row index: ${rowIndex}, Column index: ${colIndex}`);
-        const cellValue = grannyGridState.patternGrid[rowIndex]?.[colIndex];
-        console.log(`Toggling lock for cell ${cellKey}. Current value: ${cellValue}`);
-        setLockedCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
-        setFilledCells((prev) => ({ ...prev, [cellKey]: cellValue }));
-    };
-
-    const handleCellLockUpdate = useCallback((newLockedCells: Record<string, string>) => {
-        const updatedLockedCells: Record<string, boolean> = {};
-        Object.keys(newLockedCells).forEach((cellKey) => {
-            updatedLockedCells[cellKey] = true;
-        });
-        setLockedCells(updatedLockedCells);
-    }, []);
-
-    const lockFilledCells = () => {
-        const newLockedCells: Record<string, string> = { ...filledCells };
-        handleCellLockUpdate(newLockedCells);
-    };
-
-    const handleClearGrid = () => {
-        setFilledCells({});
-        setLockedCells({});
-    }
 
     const tabItems: TabItem[] = [
         {
