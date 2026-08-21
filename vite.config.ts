@@ -15,5 +15,13 @@ export default defineConfig({
         loadPaths: [path.resolve(import.meta.dirname, 'src')],
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(import.meta.dirname, 'index.html'),
+        grannySquare: path.resolve(import.meta.dirname, 'projects/granny-square/index.html'),
+      }
+    }
   }
 })
