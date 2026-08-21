@@ -47,4 +47,5 @@ class PatternedColouredGrannySquare:
         pattern_grid = await self.diagonal_grid.get_secondary_elements_on_grid(
             self.s_elem_grid
         )
+        pattern_grid = [[elem + 1 if elem is not None else "" for elem in row] for row in pattern_grid]
         return colour_grid, pattern_grid

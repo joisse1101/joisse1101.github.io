@@ -1,5 +1,6 @@
 export const downloadGridCSV = (data: string[][], filename: string = 'download.csv'): void => {
     // Convert 2D array to CSV format with escaping
+    console.log('Preparing to download CSV:', { data, filename });
     const csvContent = data
         .map((row) =>
             row

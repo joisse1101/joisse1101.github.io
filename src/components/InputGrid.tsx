@@ -1,103 +1,72 @@
-import React, { useRef, type ChangeEvent } from 'react';
-import { downloadGridCSV, parseGridCSV } from '@utils/csv';
+import React, { useEffect } from 'react';
+import { downloadGridCSV } from '@utils/csv';
 import { useMediaQuery } from '@hooks/display';
 
 export type CellColour = string | [string, string];
 
 export interface InputGridProps {
-    gridInput: string[][];
-    setGridInput: React.Dispatch<React.SetStateAction<string[][]>>;
-    gridSize: number; // Optional prop for grid size
+    filledCells: Record<string, string>;
+    setFilledCells: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+    gridSize: number;
     maxInput: number;
+    lockedCells: Record<string, boolean>;
+    handleClearGrid: () => void;
 }
 
 const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
-
-export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, gridSize, maxInput }) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
+export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCells, gridSize, maxInput, lockedCells, handleClearGrid }) => {
 
     const handleInputChange = (rowIdx: number, colIdx: number, value: string) => {
         if (value) {
             value = Math.min(Math.max(parseInt(value), 0), maxInput).toString();
         }
-        setGridInput((prevGrid) =>
-            prevGrid.map((row, r) =>
-                r === rowIdx
-                    ? row.map((cell, c) => (c === colIdx ? value : cell))
-                    : row
-            )
-        );
+        setFilledCells((prev) => {
+            const newFilledCells = { ...prev };
+            const cellKey = `${rowIdx}-${colIdx}`;
+            if (value !== '') {
+                newFilledCells[cellKey] = value;
+            } else {
+                delete newFilledCells[cellKey];
+            }
+            return newFilledCells;
+        });
     };
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
-        const csvData = gridInput.map((row) => row.map((cell) => cell.toString()));
+        console.log('Downloading grid as CSV:', { filledCells, filename, gridSize });
+        const csvData = Array.from({ length: gridSize }, (_, rowIdx) =>
+            Array.from({ length: gridSize }, (_, colIdx) => {
+                const cellKey = `${rowIdx}-${colIdx}`;
+                if (!filledCells[cellKey]) {
+                    return '';
+                }
+                return filledCells[cellKey].toString();
+            })
+        );
+
         downloadGridCSV(csvData, filename);
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file || !gridSize) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target?.result as string;
-            if (content) {
-                const parsedData = parseGridCSV(content, gridSize);
-                const cleanedData = parsedData.map((row) =>
-                    row.map((cell) => {
-                        const num = parseInt(cell);
-                        return isNaN(num) ? '' : Math.min(Math.max(num, 0), maxInput).toString();
-                    })
-                );
-                setGridInput(cleanedData);
-            }
-        };
-
-        reader.readAsText(file);
-        event.target.value = '';
-    };
-
-    const handleUploadButtonClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleClearGrid = () => {
-        const clearedGrid = Array.from({ length: gridSize }, () =>
-            Array.from({ length: gridSize }, () => '')
-        );
-        setGridInput(clearedGrid);
-    };
-
     const isDesktop = useMediaQuery(600);
-    const isGridEmpty = gridInput.every((row) => row.every((cell) => cell === ''));
+    const isGridEmpty = Object.keys(filledCells).length === 0;
 
     return (
         <>
-            <div className='btn-container'>
+            <div className='btn-container btn-container-right'>
                 <div className='btn-wrapper'>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept=".csv,text/csv,text/plain,application/csv,text/comma-separated-values"
-                        onChange={handleFileUpload}
-                        style={{ display: 'none' }}
-                    />
-                    <button className='btn btn-primary' onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
-                        Upload Grid
-                    </button>
                     {!isGridEmpty && (
                         <button className='btn btn-secondary' onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP}>
                             Download Grid
                         </button>
                     )}
+                    {isDesktop && (
+                        <button className='btn btn-danger' onClick={handleClearGrid}>
+                            Clear Grid
+                        </button>
+                    )}
                 </div>
-                {isDesktop && (
-                    <button className='btn btn-danger' onClick={handleClearGrid}>
-                        Clear Grid
-                    </button>
-                )}
+
             </div>
             <div
                 className="granny-grid"
@@ -105,30 +74,33 @@ export const InputGrid: React.FC<InputGridProps> = ({ gridInput, setGridInput, g
                     '--grid-size': gridSize,
                 } as React.CSSProperties}
             >
-                {gridInput.map((row, rowIdx) =>
-                    row.map((value, colIdx) => {
-                        const cellKey = `${rowIdx}-${colIdx}`;
-
-                        return (
-                            <div key={cellKey} className="grid-cell">
-                                {isDesktop ? (
-                                    <input
-                                        className="no-spinner"
-                                        type="number"
-                                        min={0}
-                                        max={maxInput}
-                                        value={value}
-                                        onChange={(e) =>
-                                            handleInputChange(rowIdx, colIdx, e.target.value)
-                                        }
-                                    />
-                                ) : (
-                                    <div>{value}</div>
-                                )}
-                            </div>
-                        );
-                    })
-                )}
+                {Array.from({ length: gridSize }, (_, rowIdx) => (
+                    <React.Fragment key={rowIdx}>
+                        {Array.from({ length: gridSize }, (_, colIdx) => {
+                            const cellKey = `${rowIdx}-${colIdx}`;
+                            const cellValue = filledCells[cellKey];
+                            return (
+                                <div key={cellKey} className="grid-cell">
+                                    {isDesktop ? (
+                                        <input
+                                            className="no-spinner"
+                                            type="number"
+                                            min={0}
+                                            max={maxInput}
+                                            value={cellValue ?? ''}
+                                            onChange={(e) =>
+                                                handleInputChange(rowIdx, colIdx, e.target.value)
+                                            }
+                                            disabled={lockedCells[cellKey]}
+                                        />
+                                    ) : (
+                                        <div>{cellValue}</div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </React.Fragment>
+                ))}
             </div>
         </>
     );
