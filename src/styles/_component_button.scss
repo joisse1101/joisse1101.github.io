@@ -149,6 +149,7 @@ button,
   }
 
   .btn-wrapper {
+    align-items: flex-end;
     display: flex;
     gap: 0.5rem;
 
@@ -156,9 +157,14 @@ button,
       // flex-direction: column;
       // justify-content: space-between;
       width: 100%;
+
       .btn {
         flex: 1;
       }
     }
   }
+}
+
+.btn-container-right {
+  justify-content: flex-end;
 }

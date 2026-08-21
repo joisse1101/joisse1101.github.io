@@ -3,6 +3,7 @@ import { Tabs, type TabItem } from '@components/Tabs';
 import { GrannyGrid } from '@/components/partials/grannySquare/GrannyGrid';
 import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDisplay';
 import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
+import { InputGrid } from '@/components/InputGrid';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
@@ -34,6 +35,9 @@ export default function GrannySquare() {
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
     const [grannyGridState, setGrannyGridState] = useState<GrannyGridState>(defaultGrannyGridState);
     const [lockedCells, setLockedCells] = useState<Record<string, boolean>>({});
+    const [filledCells, setFilledCells] = useState<Record<string, string>>({});
+    const [gridSize, setGridSize] = useState<string>('18');
+    const [numPatterns, setNumPatterns] = useState<string>('6');
 
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
@@ -76,18 +80,34 @@ export default function GrannySquare() {
         }
     };
 
-    const handleCellLockToggle = useCallback((cellKey: string) => {
-            console.log(`Toggling lock for cell: ${cellKey}`);
-            setLockedCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
-        }, []);
+    const isPatternGridEmpty = Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0;
 
-    const handleCellLockUpdate = useCallback((newLockedCells: [number, number][]) => {
+    const handleCellLockToggle = (cellKey: string) => {
+        const [rowIndex, colIndex] = cellKey.split('-').map((index) => parseInt(index, 10));
+        console.log(`Row index: ${rowIndex}, Column index: ${colIndex}`);
+        const cellValue = grannyGridState.patternGrid[rowIndex]?.[colIndex];
+        console.log(`Toggling lock for cell ${cellKey}. Current value: ${cellValue}`);
+        setLockedCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
+        setFilledCells((prev) => ({ ...prev, [cellKey]: cellValue }));
+    };
+
+    const handleCellLockUpdate = useCallback((newLockedCells: Record<string, string>) => {
         const updatedLockedCells: Record<string, boolean> = {};
-        newLockedCells.forEach(([row, col]) => {
-            updatedLockedCells[`${row}-${col}`] = true;
+        Object.keys(newLockedCells).forEach((cellKey) => {
+            updatedLockedCells[cellKey] = true;
         });
         setLockedCells(updatedLockedCells);
     }, []);
+
+    const lockFilledCells = () => {
+        const newLockedCells: Record<string, string> = { ...filledCells };
+        handleCellLockUpdate(newLockedCells);
+    };
+
+    const handleClearGrid = () => {
+        setFilledCells({});
+        setLockedCells({});
+    }
 
     const tabItems: TabItem[] = [
         {
@@ -105,7 +125,7 @@ export default function GrannySquare() {
                             highlightedColour={activeHighlight}
                             lockedCells={lockedCells}
                             handleCellLockToggle={handleCellLockToggle}
-                        />
+                            />
                     </div>
                     <div id="palette-table-container">
                         <PaletteDisplay
@@ -114,27 +134,30 @@ export default function GrannySquare() {
                             activeColour={selectedColour}
                             onHoverColour={setHoveredColour}
                             onClickColour={handleColourClick}
+                            />
+                    </div>
+                </div>
+            ),
+        },
+        {
+            id: 'patterns-tab',
+            label: 'Patterns',
+            disabled: isPatternGridEmpty,
+            content: (
+                <div className="output-section">
+                    <div id="grid-container">
+                        <InputGrid
+                            filledCells={filledCells}
+                            setFilledCells={setFilledCells}
+                            gridSize={parseInt(gridSize, 10)}
+                            maxInput={parseInt(numPatterns, 10) - 1}
+                            lockedCells={lockedCells}
+                            handleClearGrid={handleClearGrid}
                         />
                     </div>
                 </div>
             ),
         },
-        // {
-        //     id: 'patterns-tab',
-        //     label: 'Patterns',
-        //     content: (
-        //         <div className="output-section">
-        //             <div id="grid-container">
-        //                 <InputGrid
-        //                     gridInput={patternGrid}
-        //                     setGridInput={setPatternGrid}
-        //                     gridSize={parseInt(gridSize, 10)}
-        //                     maxInput={parseInt(numPatterns, 10) - 1}
-        //                 />
-        //             </div>
-        //         </div>
-        //     ),
-        // },
         {
             id: 'logs-tab',
             label: 'Logs',
@@ -155,14 +178,18 @@ export default function GrannySquare() {
             </div>
 
             <ControlPanel
+                gridSize={gridSize}
+                setGridSize={setGridSize}
+                numPatterns={numPatterns}
+                setNumPatterns={setNumPatterns}
+                filledCells={filledCells}
+                setFilledCells={setFilledCells}
                 isLoading={isLoading}
                 setGenerationLogs={setGenerationLogs}
                 setActiveTab={setActiveTab}
                 setIsOutputDisabled={setIsOutputDisabled}
-                grannyGridState={grannyGridState}
                 setGrannyGridState={setGrannyGridState}
-                lockedCells={lockedCells}
-                handleCellLockUpdate={handleCellLockUpdate}
+                lockFilledCells={lockFilledCells}
             />
 
             <Tabs tabs={tabItems} activeId={activeTab} onTabChange={(tabId) => setActiveTab(tabId)} />

@@ -126,7 +126,7 @@ const GridCell: React.FC<{
             onAnimationEnd={() => handleAnimationEnd(cellKey)}
             onClick={onClick}
         >
-            {pattern + 1}
+            {pattern}
         </div>
     );
 });
