@@ -15,7 +15,7 @@ export interface InputGridProps {
 }
 
 const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell }) => {
+export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell }) => {
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
