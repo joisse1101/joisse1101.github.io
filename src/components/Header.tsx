@@ -15,7 +15,7 @@ export default function Header() {
                     </label>
 
                     <div className="trigger">
-                        <a className="page-link" href="/about/">About</a>
+                        <a className="page-link" href="/projects/granny-square/">Granny Square</a>
                     </div>
                 </nav>
             </div>
