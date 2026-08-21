@@ -5,6 +5,7 @@ import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDispla
 import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
 import { InputGrid } from '@/components/InputGrid';
 import { useGrannySquare } from '@/hooks/useGrannySquare';
+import { useMediaQuery } from '@/hooks/display';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
@@ -81,6 +82,7 @@ export default function GrannySquare() {
     };
 
     const isPatternGridEmpty = isLoading || (Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0);
+    const isPhone = !useMediaQuery(600); // Use the custom hook to determine if the device is a phone
 
     const tabItems: TabItem[] = [
         {
@@ -117,7 +119,7 @@ export default function GrannySquare() {
         {
             id: 'patterns-tab',
             label: 'Patterns',
-            disabled: isPatternGridEmpty,
+            disabled: isPhone && isPatternGridEmpty,
             content: (
                 <div className="output-section">
                     <div id="grid-container">

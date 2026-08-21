@@ -78,7 +78,7 @@ $btn-primary-bg: $brand-accent;
 $btn-primary-text: $text-main; // Pure white text stays sharp and high-contrast
 $btn-primary-border: $brand-border-strong;
 $btn-primary-hover-bg: $brand-hover;
-$btn-primary-hover-border: lighten($brand-border-strong, 5%);
+$btn-primary-hover-border: rgba($brand-border-strong, 0.8);
 $btn-primary-active-bg: $brand-active;
 $btn-primary-active-border: $brand-border-strong;
 
