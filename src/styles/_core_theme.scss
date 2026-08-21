@@ -194,3 +194,9 @@ section {
     font-size: $font-sm;
   }
 }
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
