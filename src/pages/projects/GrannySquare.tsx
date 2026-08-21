@@ -31,7 +31,10 @@ export default function GrannySquare() {
         handleCellLockToggle,
         lockFilledCells,
         handleClearGrid,
-        handleFillCell
+        handleFillCell,
+        handleClearFilled,
+        handleClearLockedCells,
+        handleRemoveLocks,
     } = useGrannySquare();
 
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
@@ -104,6 +107,8 @@ export default function GrannySquare() {
                             activeColour={selectedColour}
                             onHoverColour={setHoveredColour}
                             onClickColour={handleColourClick}
+                            clearLocks={handleClearLockedCells}
+                            hasClearLocksButton={Object.keys(lockedCells).length > 0}
                         />
                     </div>
                 </div>
@@ -124,6 +129,9 @@ export default function GrannySquare() {
                             lockedCells={lockedCells}
                             handleClearGrid={handleClearGrid}
                             handleFillCell={handleFillCell}
+                            handleClearFilled={handleClearFilled}
+                            handleRemoveLocks={handleRemoveLocks}
+
                         />
                     </div>
                 </div>

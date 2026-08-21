@@ -73,8 +73,11 @@ export const useGrannySquare = () => {
     const handleCellLockToggle = (cellKey: string) => {
         const [rowIndex, colIndex] = cellKey.split('-').map((index) => parseInt(index, 10));
         const cellValue = grannyGridState.patternGrid[rowIndex]?.[colIndex];
+        const isLocked = lockedCells[cellKey] || false;
         setLockedCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
-        setFilledCells((prev) => ({ ...prev, [cellKey]: cellValue }));
+        if (!isLocked && cellValue !== undefined) {
+            setFilledCells((prev) => ({ ...prev, [cellKey]: cellValue }));
+        }
     };
 
     const lockFilledCells = () => {
@@ -85,9 +88,36 @@ export const useGrannySquare = () => {
         setLockedCells(updatedLockedCells);
     };
 
-    const handleClearGrid = () => {
-        setFilledCells({});
+    const handleClearFilled = () => {
+        setFilledCells((prev) => {
+            const next = { ...prev };
+            Object.keys(prev).forEach((cellKey) => {
+                if (!lockedCells[cellKey]) {
+                    delete next[cellKey];
+                }
+            });
+            return next;
+        });
+    };
+
+    const handleClearLockedCells = () => {
+        setFilledCells((prev) => {
+            const next = { ...prev };
+            Object.keys(lockedCells).forEach((cellKey) => {
+                delete next[cellKey];
+            });
+            return next;
+        });
         setLockedCells({});
+    };
+
+    const handleRemoveLocks = () => {
+        setLockedCells({});
+    };
+
+    const handleClearGrid = () => {
+        setLockedCells({});
+        setFilledCells({});
     }
 
     const handleFillCell = (rowIndex: number, colIndex: number, value: string) => {
@@ -112,5 +142,8 @@ export const useGrannySquare = () => {
         lockFilledCells,
         handleClearGrid,
         handleFillCell,
+        handleClearFilled,
+        handleClearLockedCells,
+        handleRemoveLocks,
     };
 };

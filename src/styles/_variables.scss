@@ -22,13 +22,13 @@ $text-muted: #a1a1aa; // High-contrast muted gray for secondary text
 $text-dim: #71717a; // Tertiary / disabled text
 
 // --- Brand & Accents (Accessible Warm Rose) ---
-$brand-accent: #e8a2b8; // Primary Rose Accent
-$brand-hover: #ecb4c8; // Hover state (brighter for visibility)
-$brand-active: #d687a0; // Active/pressed state
+$brand-accent: #9d5a70; // Muted, dusty mauve-rose
+$brand-hover: #b0677e; // Slightly lighter/richer on hover
+$brand-active: #884c60; // Deeper shade on press
 
 // --- Borders & Rules ---
-$brand-border-strong: #f0c3d0;
-$brand-border-muted: #925265;
+$brand-border-strong: #b8738a; // Soft accent border
+$brand-border-muted: #4d2c36;
 
 // --- Soft Fills & Backgrounds ---
 $accent-pink-soft: #fce7f3; // Extra light accent fill
@@ -75,10 +75,12 @@ $btn-padding-lg: 0.875rem 1.5rem;
 
 // Brand Accent Variants (Primary)
 $btn-primary-bg: $brand-accent;
-$btn-primary-text: $text-main;
+$btn-primary-text: $text-main; // Pure white text stays sharp and high-contrast
 $btn-primary-border: $brand-border-strong;
 $btn-primary-hover-bg: $brand-hover;
+$btn-primary-hover-border: lighten($brand-border-strong, 5%);
 $btn-primary-active-bg: $brand-active;
+$btn-primary-active-border: $brand-border-strong;
 
 // Secondary Variants
 $btn-secondary-bg: $bg-surface;
@@ -97,8 +99,14 @@ $btn-ghost-hover-text: $text-main;
 $btn-danger-bg: rgba($color-danger, 0.12);
 $btn-danger-text: $color-danger;
 $btn-danger-border: rgba($color-danger, 0.25);
-$btn-danger-hover-bg: rgba($color-danger, 0.25);
-$btn-danger-active-bg: rgba($color-danger, 0.4);
+
+// Soft Danger States (Filled variant)
+$btn-danger-hover-bg: rgba($color-danger, 0.22);
+$btn-danger-active-bg: rgba($color-danger, 0.35);
+
+// Outline Danger States (Transparent variant)
+$btn-danger-outline-hover-bg: rgba($color-danger, 0.08); // Soft tint on hover
+$btn-danger-outline-active-bg: rgba($color-danger, 0.18); // Darker tint on click
 
 // --- Typography Specs ---
 $font-xs: 0.625rem; // 10px
@@ -223,7 +231,9 @@ $max-width: 1200px;
   --btn-primary-text: #{$btn-primary-text};
   --btn-primary-border: #{$btn-primary-border};
   --btn-primary-hover-bg: #{$btn-primary-hover-bg};
+  --btn-primary-hover-border: #{$btn-primary-hover-border};
   --btn-primary-active-bg: #{$btn-primary-active-bg};
+  --btn-primary-active-border: #{$btn-primary-active-border};
 
   --btn-secondary-bg: #{$btn-secondary-bg};
   --btn-secondary-text: #{$btn-secondary-text};
@@ -241,6 +251,8 @@ $max-width: 1200px;
   --btn-danger-border: #{$btn-danger-border};
   --btn-danger-hover-bg: #{$btn-danger-hover-bg};
   --btn-danger-active-bg: #{$btn-danger-active-bg};
+  --btn-danger-outline-hover-bg: #{$btn-danger-outline-hover-bg};
+  --btn-danger-outline-active-bg: #{$btn-danger-outline-active-bg};
 
   /* Sizes */
   --font-xs: #{$font-xs};

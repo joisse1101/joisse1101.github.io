@@ -56,10 +56,12 @@ button,
     &:hover:not(:disabled):not(.is-disabled) {
       background-color: $btn-primary-hover-bg;
       box-shadow: $shadow-glow;
+      border-color: $btn-primary-hover-border;
     }
 
     &:active:not(:disabled):not(.is-disabled) {
       background-color: $btn-primary-active-bg;
+      border-color: $btn-primary-active-border;
     }
   }
 
@@ -99,6 +101,20 @@ button,
 
     &:active:not(:disabled):not(.is-disabled) {
       background-color: $btn-danger-active-bg;
+    }
+  }
+
+  &-danger-outline {
+    background-color: transparent;
+    color: $btn-danger-text;
+    border-color: $btn-danger-border;
+
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-outline-hover-bg;
+    }
+
+    &:active:not(:disabled):not(.is-disabled) {
+      background-color: $btn-danger-outline-active-bg;
     }
   }
 

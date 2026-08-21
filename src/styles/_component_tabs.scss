@@ -17,6 +17,8 @@
     font-weight: 600; //
     border-top-left-radius: $radius-sm; //
     border-top-right-radius: $radius-sm; //
+    border-bottom-left-radius: 0; //
+    border-bottom-right-radius: 0; //
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; //
     margin-bottom: -1px; // Align active border seamlessly with header line
 
@@ -25,6 +27,7 @@
       color: $text-main; //
       background-color: $bg-surface-hover; //
       box-shadow: $shadow-glow-md; //
+      border-color: $border-subtle $border-subtle transparent $border-subtle; //
     }
 
     // Focus state
@@ -36,7 +39,7 @@
     // Active state
     &.active {
       background-color: $bg-surface; //
-      color: $brand-accent; //
+      color: $text-main; //
       border-color: $border-subtle $border-subtle transparent $border-subtle; //
     }
 
