@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { downloadGridCSV } from '@utils/csv';
 import { useMediaQuery } from '@hooks/display';
 
@@ -34,7 +34,6 @@ export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCell
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
-        console.log('Downloading grid as CSV:', { filledCells, filename, gridSize });
         const csvData = Array.from({ length: gridSize }, (_, rowIdx) =>
             Array.from({ length: gridSize }, (_, colIdx) => {
                 const cellKey = `${rowIdx}-${colIdx}`;
