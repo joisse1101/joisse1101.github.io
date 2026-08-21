@@ -18,12 +18,6 @@ export default function GrannySquare() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [generationLogs, setGenerationLogs] = useState<string[]>([]);
 
-    const [activeTab, setActiveTab] = useState<string>('logs-tab');
-    const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
-    
-    const [selectedColour, setSelectedColour] = useState<string | null>(null);
-    const [hoveredColour, setHoveredColour] = useState<string | null>(null);
-    
     const {
         grannyGridState,
         setGrannyGridState,
@@ -37,7 +31,14 @@ export default function GrannySquare() {
         handleCellLockToggle,
         lockFilledCells,
         handleClearGrid,
+        handleFillCell
     } = useGrannySquare();
+
+    const [activeTab, setActiveTab] = useState<string>('logs-tab');
+    const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(grannyGridState.colourGrid.length === 0 || grannyGridState.patternGrid.length === 0);
+    const [selectedColour, setSelectedColour] = useState<string | null>(null);
+    const [hoveredColour, setHoveredColour] = useState<string | null>(null);
+
 
     useEffect(() => {
         window.addLogs = (log: string[]) => {
@@ -76,7 +77,7 @@ export default function GrannySquare() {
         }
     };
 
-    const isPatternGridEmpty = Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0;
+    const isPatternGridEmpty = isLoading || (Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0);
 
     const tabItems: TabItem[] = [
         {
@@ -94,7 +95,7 @@ export default function GrannySquare() {
                             highlightedColour={activeHighlight}
                             lockedCells={lockedCells}
                             handleCellLockToggle={handleCellLockToggle}
-                            />
+                        />
                     </div>
                     <div id="palette-table-container">
                         <PaletteDisplay
@@ -103,7 +104,7 @@ export default function GrannySquare() {
                             activeColour={selectedColour}
                             onHoverColour={setHoveredColour}
                             onClickColour={handleColourClick}
-                            />
+                        />
                     </div>
                 </div>
             ),
@@ -122,6 +123,7 @@ export default function GrannySquare() {
                             maxInput={parseInt(numPatterns, 10) - 1}
                             lockedCells={lockedCells}
                             handleClearGrid={handleClearGrid}
+                            handleFillCell={handleFillCell}
                         />
                     </div>
                 </div>
