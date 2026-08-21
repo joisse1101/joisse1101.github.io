@@ -43,6 +43,18 @@ export default function GrannySquare() {
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
 
+    const setActiveAndScrollToTab = (tab: string) => {
+        setActiveTab(tab);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const tabsElement = document.querySelector<HTMLElement>('.tabs-header');
+                if (tabsElement) {
+                    tabsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 1500);
+        });
+    }
+
 
     useEffect(() => {
         window.addLogs = (log: string[]) => {
@@ -70,6 +82,18 @@ export default function GrannySquare() {
         };
     }, []);
 
+    useEffect(() => {
+        if (!isLoading) {
+            if (grannyGridState.colourGrid.length === 0 || grannyGridState.patternGrid.length === 0) {
+                setIsOutputDisabled(true);
+                setActiveAndScrollToTab('logs-tab');
+            } else {
+                setIsOutputDisabled(false);
+                setActiveAndScrollToTab('output-tab');
+            }
+        }
+    }, [grannyGridState, isLoading]);
+
     const activeHighlight = hoveredColour ?? selectedColour;
 
     const handleColourClick = (colour: string) => {
@@ -83,6 +107,8 @@ export default function GrannySquare() {
 
     const isPatternGridEmpty = isLoading || (Object.keys(filledCells).length === 0 && Object.keys(lockedCells).length === 0);
     const isPhone = !useMediaQuery(600); // Use the custom hook to determine if the device is a phone
+
+
 
     const tabItems: TabItem[] = [
         {
@@ -152,6 +178,7 @@ export default function GrannySquare() {
         },
     ];
 
+
     return (
         <div className="app-wrapper">
             <div id="loading-spinner" className={`card ${isLoading ? '' : 'collapsed'}`}>
@@ -167,7 +194,7 @@ export default function GrannySquare() {
                 setFilledCells={setFilledCells}
                 isLoading={isLoading}
                 setGenerationLogs={setGenerationLogs}
-                setActiveTab={setActiveTab}
+                setActiveTab={setActiveAndScrollToTab}
                 setIsOutputDisabled={setIsOutputDisabled}
                 setGrannyGridState={setGrannyGridState}
                 lockFilledCells={lockFilledCells}
