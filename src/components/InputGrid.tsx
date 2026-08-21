@@ -11,26 +11,11 @@ export interface InputGridProps {
     maxInput: number;
     lockedCells: Record<string, boolean>;
     handleClearGrid: () => void;
+    handleFillCell: (rowIndex: number, colIndex: number, value: string) => void;
 }
 
 const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCells, gridSize, maxInput, lockedCells, handleClearGrid }) => {
-
-    const handleInputChange = (rowIdx: number, colIdx: number, value: string) => {
-        if (value) {
-            value = Math.min(Math.max(parseInt(value), 0), maxInput).toString();
-        }
-        setFilledCells((prev) => {
-            const newFilledCells = { ...prev };
-            const cellKey = `${rowIdx}-${colIdx}`;
-            if (value !== '') {
-                newFilledCells[cellKey] = value;
-            } else {
-                delete newFilledCells[cellKey];
-            }
-            return newFilledCells;
-        });
-    };
+export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell }) => {
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
@@ -88,7 +73,7 @@ export const InputGrid: React.FC<InputGridProps> = ({ filledCells, setFilledCell
                                             max={maxInput}
                                             value={cellValue ?? ''}
                                             onChange={(e) =>
-                                                handleInputChange(rowIdx, colIdx, e.target.value)
+                                                handleFillCell(rowIdx, colIdx, e.target.value)
                                             }
                                             disabled={lockedCells[cellKey]}
                                         />
