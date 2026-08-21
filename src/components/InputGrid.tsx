@@ -35,8 +35,8 @@ export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, max
         downloadGridCSV(csvData, filename);
     };
 
-    const isDesktop = useMediaQuery(600);
     const isGridEmpty = Object.keys(filledCells).length === 0;
+    const isPhone = !useMediaQuery(600); // Use the custom hook to determine if the device is a phone
 
     return (
         <>
@@ -70,7 +70,7 @@ export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, max
                             const cellValue = filledCells[cellKey];
                             return (
                                 <div key={cellKey} className="grid-cell">
-                                    {isDesktop ? (
+                                    {!isPhone ? (
                                         <input
                                             className="no-spinner"
                                             type="number"
