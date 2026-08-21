@@ -26,47 +26,49 @@ export const PaletteDisplay: React.FC<PaletteDisplayProps> = ({
 
     return (
         <>
-            <div className="palette-container">
+            <div className="stacked">
                 <button className="btn btn-danger" onClick={clearLocks} disabled={!hasClearLocksButton} title={CLEAR_LOCKED_CELLS_TOOLTIP}>
                     Clear Locks
                 </button>
-                {palette.map((colour, idx) => {
-                    const isAnimationDone = animatedRows[idx];
-                    const isActive = activeColour?.toLowerCase() === colour.toLowerCase();
+                <div className="palette-container">
+                    {palette.map((colour, idx) => {
+                        const isAnimationDone = animatedRows[idx];
+                        const isActive = activeColour?.toLowerCase() === colour.toLowerCase();
 
-                    const delay = idx * 0.05;
-                    const rowStyle: React.CSSProperties = !isAnimationDone
-                        ? ({ '--delay': `${delay.toFixed(2)}s` } as React.CSSProperties)
-                        : {};
+                        const delay = idx * 0.05;
+                        const rowStyle: React.CSSProperties = !isAnimationDone
+                            ? ({ '--delay': `${delay.toFixed(2)}s` } as React.CSSProperties)
+                            : {};
 
-                    const swatchStyle = {
-                        '--swatch-color': colour,
-                    } as React.CSSProperties;
+                        const swatchStyle = {
+                            '--swatch-color': colour,
+                        } as React.CSSProperties;
 
-                    const classNames = [
-                        'palette-row',
-                        !isAnimationDone ? 'animated-cell' : '',
-                        isActive ? 'is-active' : '',
-                    ]
-                        .filter(Boolean)
-                        .join(' ');
+                        const classNames = [
+                            'palette-row',
+                            !isAnimationDone ? 'animated-cell' : '',
+                            isActive ? 'is-active' : '',
+                        ]
+                            .filter(Boolean)
+                            .join(' ');
 
-                    return (
-                        <div
-                            key={`${colour}-${idx}`}
-                            className={classNames}
-                            style={rowStyle}
-                            data-colour={colour.toLowerCase()}
-                            onMouseEnter={() => onHoverColour(colour)}
-                            onMouseLeave={() => onHoverColour(null)}
-                            onClick={() => onClickColour(colour)}
-                            onAnimationEnd={() => handleAnimationEnd(idx)}
-                        >
-                            <div className="palette-swatch" style={swatchStyle} />
-                            <span className="palette-label">{colour}</span>
-                        </div>
-                    );
-                })}
+                        return (
+                            <div
+                                key={`${colour}-${idx}`}
+                                className={classNames}
+                                style={rowStyle}
+                                data-colour={colour.toLowerCase()}
+                                onMouseEnter={() => onHoverColour(colour)}
+                                onMouseLeave={() => onHoverColour(null)}
+                                onClick={() => onClickColour(colour)}
+                                onAnimationEnd={() => handleAnimationEnd(idx)}
+                            >
+                                <div className="palette-swatch" style={swatchStyle} />
+                                <span className="palette-label">{colour}</span>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </>
     );
