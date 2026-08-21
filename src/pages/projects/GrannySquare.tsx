@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ColorPalettePicker } from '@components/ColourPalettePicker';
 import { Tabs, type TabItem } from '@components/Tabs';
-import { GrannyGrid } from '@components/GrannyGrid';
-import { PaletteDisplay } from '@components/PaletteDisplay';
+import { GrannyGrid } from '@/components/partials/grannySquare/GrannyGrid';
+import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDisplay';
 import { InputGrid } from '@components/InputGrid';
 import { useMediaQuery } from '@hooks/display';
+import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
@@ -29,15 +30,8 @@ const defaultGrannyGridState: GrannyGridState = {
 
 export default function GrannySquare() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const isDesktop = useMediaQuery(600);
-    const maxGridSize = isDesktop ? 24 : 18; // Limit grid size for mobile devices
-
-    const [gridSize, setGridSize] = useState<string>('18');
-    const [numPatterns, setNumPatterns] = useState<string>('6');
-    const [colors, setColors] = useState<string[]>([]);
-    const [patternGrid, setPatternGrid] = useState<string[][]>(Array.from({ length: parseInt(gridSize, 10) }, () => Array(parseInt(gridSize, 10)).fill(''))); // User editable pattern grid
     const [generationLogs, setGenerationLogs] = useState<string[]>([]);
-    const [errors, setErrors] = useState<string[]>([]);
+
 
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
@@ -72,80 +66,6 @@ export default function GrannySquare() {
             delete window.addLogs;
         };
     }, []);
-
-    const handleClearGrid = () => {
-        if (isNaN(parseInt(gridSize, 10)) || parseInt(gridSize, 10) <= 0) {
-            setErrors([`Invalid grid size. Please enter a positive integer between 0 and ${maxGridSize}.`]);
-            return;
-        }
-        const clearedGrid = Array.from({ length: parseInt(gridSize, 10) }, () =>
-            Array.from({ length: parseInt(gridSize, 10) }, () => '')
-        );
-        setPatternGrid(clearedGrid);
-    };
-
-    const validateInputs = (): boolean => {
-        const gridSizeNum = parseInt(gridSize, 10);
-        const numPatternsNum = parseInt(numPatterns, 10);
-        const errors: string[] = [];
-        if (isNaN(gridSizeNum) || gridSizeNum <= 0 || gridSizeNum > maxGridSize) {
-            errors.push(`Invalid grid size. Please enter a positive integer between 0 and ${maxGridSize}.`);
-        }
-        if (isNaN(numPatternsNum) || numPatternsNum <= 0 || numPatternsNum > maxGridSize) {
-            errors.push(`Invalid number of patterns. Please enter a positive integer between 0 and ${maxGridSize}.`);
-        }
-        if (colors.length === 0) {
-            errors.push('Please select at least one color for the palette.');
-        }
-        if (errors.length > 0) {
-            setErrors(errors);
-            return false;
-        }
-        setErrors([]);
-        return true;
-    };
-
-    const handleGenerate = async () => {
-        if (!validateInputs()) {
-            setGenerationLogs(['Input validation failed. Please correct the errors and try again.']);
-            return;
-        }
-
-        setActiveTab('logs-tab');
-        setIsOutputDisabled(true);
-
-        if (parseInt(gridSize, 10) > 0 && parseInt(numPatterns, 10) > 0 && colors.length > 0) {
-            if (window.generateGrannySquare) {
-                setGenerationLogs(['Generating granny square...']);
-
-                const result = await window.generateGrannySquare(
-                    parseInt(gridSize, 10),
-                    colors,
-                    parseInt(numPatterns, 10),
-                    patternGrid.some(row => row.some(cell => cell !== ''))
-                        ? patternGrid.map(row =>
-                            row.map(cell => {
-                                const parsed = parseInt(cell, 10);
-                                return Number.isNaN(parsed) ? undefined : parsed;
-                            })
-                        )
-                        : undefined
-                );
-                setGrannyGridState({
-                    gridSize: parseInt(gridSize, 10),
-                    colourGrid: result.colourGrid,
-                    patternGrid: result.patternGrid,
-                    palette: colors,
-                });
-                setPatternGrid(result.patternGrid);
-                setIsOutputDisabled(false);
-                setTimeout(() => setActiveTab('output-tab'), 500);
-            } else {
-                setGenerationLogs(['Something went wrong.', 'generateGrannySquare function is not available on window.']);
-            }
-        }
-
-    };
 
     const activeHighlight = hoveredColour ?? selectedColour;
 
@@ -186,22 +106,22 @@ export default function GrannySquare() {
                 </div>
             ),
         },
-        {
-            id: 'patterns-tab',
-            label: 'Patterns',
-            content: (
-                <div className="output-section">
-                    <div id="grid-container">
-                        <InputGrid
-                            gridInput={patternGrid}
-                            setGridInput={setPatternGrid}
-                            gridSize={parseInt(gridSize, 10)}
-                            maxInput={parseInt(numPatterns, 10) - 1}
-                        />
-                    </div>
-                </div>
-            ),
-        },
+        // {
+        //     id: 'patterns-tab',
+        //     label: 'Patterns',
+        //     content: (
+        //         <div className="output-section">
+        //             <div id="grid-container">
+        //                 <InputGrid
+        //                     gridInput={patternGrid}
+        //                     setGridInput={setPatternGrid}
+        //                     gridSize={parseInt(gridSize, 10)}
+        //                     maxInput={parseInt(numPatterns, 10) - 1}
+        //                 />
+        //             </div>
+        //         </div>
+        //     ),
+        // },
         {
             id: 'logs-tab',
             label: 'Logs',
@@ -221,45 +141,13 @@ export default function GrannySquare() {
                 <span>Loading Python environment and scripts...</span>
             </div>
 
-            <div className="card card-control-panel">
-                <div id="form-grid" className="form-grid">
-                    <div className="form-group">
-                        <label htmlFor="gridSize">Grid Size</label>
-                        <input type="number" id="gridSize" value={gridSize}
-                            onBlur={(e) => {
-                                if (e.target.value != gridSize) {
-                                    setGridSize(e.target.value)
-                                    handleClearGrid();
-                                }
-                            }}
-                            disabled={isLoading} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="numPatterns">Number of Patterns</label>
-                        <input type="number" id="numPatterns" value={numPatterns} onBlur={(e) => {
-                            if (e.target.value != numPatterns) {
-                                setNumPatterns(e.target.value)
-                                handleClearGrid();
-                            }
-                        }} disabled={isLoading} />
-                    </div>
-                    <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
-                        <summary className={`accordion-header ${isLoading ? 'disabled' : ''}`}>Colour Settings / Palette</summary>
-                        <ColorPalettePicker onChange={(newPalette: string[]) => setColors(newPalette)} />
-                    </details>
-                    {errors.length > 0 && (
-                        <div className="error-messages">
-                            {errors.map((error, index) => (
-                                <div key={index} className="error-message">{error}</div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <button id="submitBtn" className="btn btn--primary" type="button" disabled={isLoading} onClick={handleGenerate}>
-                    {isLoading ? 'Loading...' : 'Generate Square'}
-                </button>
-            </div>
+            <ControlPanel
+                isLoading={isLoading}
+                setGenerationLogs={setGenerationLogs}
+                setActiveTab={setActiveTab}
+                setIsOutputDisabled={setIsOutputDisabled}
+                setGrannyGridState={setGrannyGridState}
+            />
 
             <Tabs tabs={tabItems} activeId={activeTab} onTabChange={(tabId) => setActiveTab(tabId)} />
         </div>

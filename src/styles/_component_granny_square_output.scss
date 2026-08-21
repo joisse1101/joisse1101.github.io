@@ -10,7 +10,7 @@
   margin-right: auto;
   color: $text-main;
 
-  > * + * {
+  >*+* {
     margin-top: $card-gap-md;
   }
 }
@@ -99,6 +99,10 @@
   gap: 0.25rem;
   width: 100%;
 
+  @media (min-width: 600px) {
+    gap: 0.5rem;
+  }
+
   .grid-cell {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -117,9 +121,22 @@
     text-shadow: $shadow-text;
     font-size: $font-xs;
 
+    @media (min-width: 600px) {
+      font-size: $font-sm;
+    }
+
     &:hover {
       transform: scale($cell-hover-scale);
       z-index: 10;
+    }
+
+    &.is-locked {
+      outline: 1px solid $brand-active;
+      outline-offset: 1px;
+
+      @media (min-width: 600px) {
+        outline-offset: 2px;
+      }
     }
   }
 }
@@ -140,6 +157,7 @@
     opacity: 0;
     transform: scale(0.8);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -227,7 +245,7 @@
   font-weight: 600;
   color: $text-muted;
 
-  > * + * {
+  >*+* {
     margin-top: 0.75rem;
   }
 }

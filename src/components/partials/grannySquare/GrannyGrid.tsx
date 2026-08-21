@@ -51,6 +51,7 @@ export const GrannyGrid: React.FC<GrannyGridProps> = ({
                                 cellKey={cellKey}
                                 delay={(rowIdx + colIdx) * 0.05}
                                 isAnimationDone={isAnimationDone}
+                                isLocked={true}
                             />
                         );
                     })
@@ -76,7 +77,8 @@ const GridCell: React.FC<{
     cellKey: string;
     delay: number;
     isAnimationDone: boolean;
-}> = ({ colourList, pattern, highlightedColour, handleAnimationEnd, cellKey, delay, isAnimationDone }) => {
+    isLocked: boolean;
+}> = ({ colourList, pattern, highlightedColour, handleAnimationEnd, cellKey, delay, isAnimationDone, isLocked }) => {
 
     const isMix = Array.isArray(colourList) && colourList.length === 2;
     let cellStyle: CustomCSSProperties = {};
@@ -111,6 +113,7 @@ const GridCell: React.FC<{
         'grid-cell',
         !isAnimationDone ? 'animated-cell' : '',
         isHighlighted ? 'is-highlighted' : '',
+        isLocked ? 'is-locked' : '',
     ]
         .filter(Boolean)
         .join(' ');
