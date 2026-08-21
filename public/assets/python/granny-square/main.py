@@ -40,6 +40,8 @@ async def generate_square(grid_size, palette, num_patterns, curr_pattern_grid=No
         return to_js({"colourGrid": colour_grid, "patternGrid": pattern_grid})
     except Exception as e:
         print(f"Error generating granny square: {e}")
+        import traceback    
+        print(traceback.format_exc())
         return to_js({"colourGrid": [], "patternGrid": []})
 
 

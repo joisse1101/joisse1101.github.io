@@ -1,5 +1,6 @@
 import ColorPalettePicker from "@/components/ColourPalettePicker";
 import { useMediaQuery } from "@/hooks/display";
+import type { GrannyGridState } from "@/pages/projects/GrannySquare";
 import { downloadGridCSV, parseGridCSV } from "@/utils/csv";
 import { useRef, useState, type ChangeEvent } from "react";
 
@@ -8,22 +9,29 @@ export interface ControlPanelProps {
     setGenerationLogs: (logs: string[]) => void;
     setActiveTab: (tab: string) => void;
     setIsOutputDisabled: (disabled: boolean) => void;
-    setGrannyGridState: (state: any) => void;
+    grannyGridState: GrannyGridState;
+    setGrannyGridState: (state: GrannyGridState) => void;
+    lockedCells: Record<string, boolean>;
+    handleCellLockUpdate: (newLockedCells: [number, number][]) => void;
 }
 
-const DOWNLOAD_INPUT_TOOLTIP = 'Download the currently displayed grid as a CSV file.';
-const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
+const DOWNLOAD_INPUT_TOOLTIP = 'Download the pattern of the locked cells as a CSV file.';
+const UPLOAD_INPUT_TOOLTIP = 'Upload a CSV file to populate the pattern grid.\nNumbers in the grid will be clamped between 0 and the specified maximum input value.';
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
     isLoading,
     setGenerationLogs,
     setActiveTab,
     setIsOutputDisabled,
-    setGrannyGridState
+    grannyGridState,
+    setGrannyGridState,
+    lockedCells,
+    handleCellLockUpdate,
 }) => {
     const isDesktop = useMediaQuery(600);
     const maxGridSize = isDesktop ? 24 : 18; // Limit grid size for mobile devices
 
+    const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [gridSize, setGridSize] = useState<string>('18');
     const [numPatterns, setNumPatterns] = useState<string>('6');
     const [colors, setColors] = useState<string[]>([]);
@@ -59,9 +67,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         }
 
         setActiveTab('logs-tab');
-        setIsOutputDisabled(true);
 
         if (parseInt(gridSize, 10) > 0 && parseInt(numPatterns, 10) > 0 && colors.length > 0) {
+            setIsOutputDisabled(true);
+            setIsGenerating(true);
             if (window.generateGrannySquare) {
                 setGenerationLogs(['Generating granny square...']);
 
@@ -84,11 +93,23 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                     patternGrid: result.patternGrid,
                     palette: colors,
                 });
+
+                const lockedCells: [number, number][] = [];
+                patternGrid.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        if (cell !== '') {
+                            lockedCells.push([rowIndex, colIndex]);
+                        }
+                    });
+                });
+                handleCellLockUpdate(lockedCells);
+
                 setIsOutputDisabled(false);
                 setTimeout(() => setActiveTab('output-tab'), 500);
             } else {
                 setGenerationLogs(['Something went wrong.', 'generateGrannySquare function is not available on window.']);
             }
+            setTimeout(() => setIsGenerating(false), 500);
         }
 
     };
@@ -99,20 +120,14 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 <div className="form-group">
                     <label htmlFor="gridSize">Grid Size</label>
                     <input type="number" id="gridSize" value={gridSize}
-                        onBlur={(e) => {
-                            if (e.target.value != gridSize) {
-                                setGridSize(e.target.value)
-                            }
-                        }}
+                        onChange={(e) => setGridSize(e.target.value)}
                         disabled={isLoading} />
                 </div>
                 <div className="form-group">
                     <label htmlFor="numPatterns">Number of Patterns</label>
-                    <input type="number" id="numPatterns" value={numPatterns} onBlur={(e) => {
-                        if (e.target.value != numPatterns) {
-                            setNumPatterns(e.target.value)
-                        }
-                    }} disabled={isLoading} />
+                    <input type="number" id="numPatterns" value={numPatterns}
+                        onChange={(e) => setNumPatterns(e.target.value)}
+                        disabled={isLoading} />
                 </div>
                 <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
                     <summary className={`accordion-header ${isLoading ? 'disabled' : ''}`}>Colour Settings / Palette</summary>
@@ -129,17 +144,19 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             <div className="btn-container">
                 {isLoading ?
                     <button id="loadingBtn" className="btn btn-primary" type="button" disabled={true} onClick={handleGenerate}>
-                        {isLoading ? 'Loading...' : 'Upload Grid'}
+                        Loading...
                     </button>
                     :
                     <>
                         <DownloadAndUploadButtons
                             gridSize={parseInt(gridSize)}
-                            maxInput={maxGridSize}
+                            maxInput={numPatterns ? parseInt(numPatterns) : 0}
                             gridInput={patternGrid}
                             setGridInput={setPatternGrid}
+                            patternGrid={grannyGridState.patternGrid}
+                            lockedCells={lockedCells}
                         />
-                        <button id="submitBtn" className="btn btn-primary" type="button" onClick={handleGenerate}>
+                        <button id="submitBtn" className="btn btn-primary" type="button" disabled={isGenerating} onClick={handleGenerate}>
                             {'Generate Square'}
                         </button>
                     </>
@@ -154,7 +171,9 @@ const DownloadAndUploadButtons: React.FC<{
     maxInput: number;
     gridInput: string[][];
     setGridInput: (grid: string[][]) => void;
-}> = ({ gridSize, maxInput, gridInput, setGridInput }) => {
+    patternGrid: string[][];
+    lockedCells: Record<string, boolean>;
+}> = ({ gridSize, maxInput, gridInput, setGridInput, lockedCells, patternGrid }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -169,9 +188,13 @@ const DownloadAndUploadButtons: React.FC<{
                 const cleanedData = parsedData.map((row) =>
                     row.map((cell) => {
                         const num = parseInt(cell);
-                        return isNaN(num) ? '' : Math.min(Math.max(num, 0), maxInput).toString();
+                        return isNaN(num) ? '' : Math.min(Math.max(num - 1, 0), maxInput - 1).toString();
                     })
                 );
+                cleanedData.length = gridSize; // Ensure the number of rows matches gridSize
+                cleanedData.forEach((row) => {
+                    row.length = gridSize; // Ensure the number of columns matches gridSize
+                });
                 setGridInput(cleanedData);
             }
         };
@@ -186,11 +209,28 @@ const DownloadAndUploadButtons: React.FC<{
 
     const downloadGridAsCSV = () => {
         const filename = 'grid_data.csv';
-        const csvData = gridInput.map((row) => row.map((cell) => cell.toString()));
+        console.log('gridInput:', patternGrid);
+        console.log('lockedCells:', lockedCells);
+        const csvData = patternGrid.map((row, rowIdx) =>
+            row.map((cell, colIdx) => {
+                const cellKey = `${rowIdx}-${colIdx}`;
+                const isLocked = Boolean(lockedCells[cellKey]);
+
+                // Check if cell is non-empty and a valid number
+                const numericValue = Number(cell);
+                const isValidNumber = cell !== '' && cell !== null && !isNaN(numericValue);
+
+                if (isLocked && isValidNumber) {
+                    return (numericValue + 1).toString();
+                }
+
+                return '';
+            })
+        );
         downloadGridCSV(csvData, filename);
     };
 
-    const isGridEmpty = gridInput.every((row) => row.every((cell) => cell === ''));
+    const isGridEmpty = lockedCells && Object.keys(lockedCells).length === 0;
 
     return (
         <div className="btn-wrapper">
@@ -201,11 +241,11 @@ const DownloadAndUploadButtons: React.FC<{
                 onChange={handleFileUpload}
                 style={{ display: 'none' }}
             />
-            <button className="btn btn-secondary" type="button" onClick={handleUploadButtonClick}>
+            <button className="btn btn-secondary" type="button" onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
                 {'Upload Grid'}
             </button>
             {!isGridEmpty && (
-                <button className="btn btn-secondary" type="button" onClick={downloadGridAsCSV}>
+                <button className="btn btn-secondary" type="button" onClick={downloadGridAsCSV} title={DOWNLOAD_INPUT_TOOLTIP}>
                     {'Download Grid'}
                 </button>
             )}

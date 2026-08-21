@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react';
-import { ColorPalettePicker } from '@components/ColourPalettePicker';
+import { useCallback, useEffect, useState } from 'react';
 import { Tabs, type TabItem } from '@components/Tabs';
 import { GrannyGrid } from '@/components/partials/grannySquare/GrannyGrid';
 import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDisplay';
-import { InputGrid } from '@components/InputGrid';
-import { useMediaQuery } from '@hooks/display';
 import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
 
 // Extend Window so TypeScript doesn't throw errors
@@ -15,7 +12,7 @@ declare global {
     }
 }
 
-type GrannyGridState = {
+export type GrannyGridState = {
     gridSize: number;
     colourGrid: string[][];
     patternGrid: string[][];
@@ -36,6 +33,7 @@ export default function GrannySquare() {
     const [activeTab, setActiveTab] = useState<string>('logs-tab');
     const [isOutputDisabled, setIsOutputDisabled] = useState<boolean>(true);
     const [grannyGridState, setGrannyGridState] = useState<GrannyGridState>(defaultGrannyGridState);
+    const [lockedCells, setLockedCells] = useState<Record<string, boolean>>({});
 
     const [selectedColour, setSelectedColour] = useState<string | null>(null);
     const [hoveredColour, setHoveredColour] = useState<string | null>(null);
@@ -78,6 +76,19 @@ export default function GrannySquare() {
         }
     };
 
+    const handleCellLockToggle = useCallback((cellKey: string) => {
+            console.log(`Toggling lock for cell: ${cellKey}`);
+            setLockedCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
+        }, []);
+
+    const handleCellLockUpdate = useCallback((newLockedCells: [number, number][]) => {
+        const updatedLockedCells: Record<string, boolean> = {};
+        newLockedCells.forEach(([row, col]) => {
+            updatedLockedCells[`${row}-${col}`] = true;
+        });
+        setLockedCells(updatedLockedCells);
+    }, []);
+
     const tabItems: TabItem[] = [
         {
             id: 'output-tab',
@@ -92,6 +103,8 @@ export default function GrannySquare() {
                             colourGrid={grannyGridState.colourGrid}
                             patternGrid={grannyGridState.patternGrid}
                             highlightedColour={activeHighlight}
+                            lockedCells={lockedCells}
+                            handleCellLockToggle={handleCellLockToggle}
                         />
                     </div>
                     <div id="palette-table-container">
@@ -146,7 +159,10 @@ export default function GrannySquare() {
                 setGenerationLogs={setGenerationLogs}
                 setActiveTab={setActiveTab}
                 setIsOutputDisabled={setIsOutputDisabled}
+                grannyGridState={grannyGridState}
                 setGrannyGridState={setGrannyGridState}
+                lockedCells={lockedCells}
+                handleCellLockUpdate={handleCellLockUpdate}
             />
 
             <Tabs tabs={tabItems} activeId={activeTab} onTabChange={(tabId) => setActiveTab(tabId)} />
