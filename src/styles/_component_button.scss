@@ -89,6 +89,7 @@ button,
     }
   }
 
+
   // --- Danger / Destructive Variant ---
   &-danger {
     background-color: $btn-danger-bg;
@@ -150,7 +151,34 @@ button,
     box-shadow: none !important;
     transform: none !important;
   }
+
+  // --- Invisible Variant ---
+  &-invisible {
+    background-color: transparent;
+    border-color: transparent;
+    color: $btn-ghost-text;
+
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      color: $btn-ghost-hover-text;
+    }
+
+    &:disabled,
+    &.is-disabled {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      color: $disabled-text !important;
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+  }
 }
+
 
 .btn-container {
   display: flex;

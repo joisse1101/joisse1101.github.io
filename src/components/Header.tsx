@@ -16,6 +16,7 @@ export default function Header() {
 
                     <div className="trigger">
                         <a className="page-link" href="/projects/granny-square/">Granny Square</a>
+                        <a className="page-link" href="/projects/habit-tracker/">Habit Tracker</a>
                     </div>
                 </nav>
             </div>

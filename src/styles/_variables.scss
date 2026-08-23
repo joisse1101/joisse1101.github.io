@@ -39,6 +39,7 @@ $brand-text-dark: #6e2e43; // High-contrast text on soft pink backgrounds
 $brand-disabled: #edd6dd; // Disabled button states & subtle icons
 
 // --- Feedback / State Colors ---
+$color-stretch: #06b6d4; // Electric Cyan
 $color-success: #34d399; // Mint Green
 $color-warning: #fbbf24; // Amber
 $color-danger: #f87171; // Soft Coral
@@ -194,6 +195,7 @@ $max-width: 1200px;
   --brand-disabled: #{$brand-disabled};
 
   /* Feedback */
+  --color-stretch: #{$color-stretch};
   --color-success: #{$color-success};
   --color-warning: #{$color-warning};
   --color-danger: #{$color-danger};
@@ -302,3 +304,4 @@ $max-width: 1200px;
   /* Layout */
   --max-width: #{$max-width};
 }
+

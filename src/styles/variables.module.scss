@@ -1,0 +1,8 @@
+@use "variables" as *;
+
+:export {
+    colorStretch: $color-stretch;
+    colorSuccess: $color-success;
+    colorWarning: $color-warning;
+    colorDanger: $color-danger;
+}

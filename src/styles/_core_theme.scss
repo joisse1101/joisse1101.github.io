@@ -201,3 +201,15 @@ section {
   flex-direction: column;
   gap: 1rem;
 }
+
+.side-by-side {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+
+  .responsive {
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+  }
+}
