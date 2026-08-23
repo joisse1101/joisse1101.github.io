@@ -1,4 +1,3 @@
-import type { WeekState } from "@components/WeekSelector";
 import { useEffect, useState } from "react";
 import { getDatesInRange, getDaysBetween, getLocalDateKey } from "@/utils/dates";
 import { getStatusColor, interpolateColors } from "@/utils/colours";

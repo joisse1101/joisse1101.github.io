@@ -7,7 +7,7 @@ import { useGoalTracker } from "@/hooks/useGoalTracker";
 export default function GoalTracker() {
     const [activeTab, setActiveTab] = useState<string>('walking-tab');
 
-    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress } = useGoalTracker();
+    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, weekendDates, targetWeekendProgress } = useGoalTracker();
 
     const tabItems: TabItem[] = [
         {
