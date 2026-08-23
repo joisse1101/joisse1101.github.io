@@ -1,31 +1,15 @@
-import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { useEffect, useState } from "react";
+import type { GoalState } from "@/hooks/useGoalTracker";
 
-type GoalStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
-
-export const GoalTimeline = () => {
-    const [goal, setGoals] = useState<number[]>([1, 5, 30, 100, 200, 300, 500, 750]);
-
-    const generatedPalette =
-        [
-            ...interpolateColors(getStatusColor('danger'), getStatusColor('warning'), goal.length / 2 - 2),
-            ...interpolateColors(getStatusColor('warning'), getStatusColor('success'), goal.length / 2 - 1).slice(1)
-        ];
+export const GoalTimeline = ({ goals }: { goals: GoalState[] }) => {
     return (
         <div className="card">
             <div className="horizontal-tracker">
-                {goal.map((goalNumber, idx) => {
-                    const goalStatus: GoalStatus = idx < 5 ? 'COMPLETED' : idx === 5 ? 'ACTIVE' : 'PENDING';
+                {goals.map((goal, idx) => {
                     return (
                         <GoalComponent
                             key={idx}
-                            goalStatus={goalStatus}
-                            goal={{
-                                number: goalNumber,
-                                title: `${goalNumber} km`,
-                                subtitle: `Subtitle ${goalNumber}`,
-                                color: generatedPalette[idx]
-                            }}
+                            goal={goal}
                         />
                     );
                 })}
@@ -36,28 +20,22 @@ export const GoalTimeline = () => {
 };
 
 const GoalComponent: React.FC<{
-    goalStatus: GoalStatus;
-    goal: {
-        number: number;
-        title: string;
-        subtitle: string;
-        color: string;
-    }
-}> = ({ goalStatus, goal }) => {
+    goal: GoalState
+}> = ({ goal }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const stepClass = goalStatus === 'COMPLETED' ? 'completed' : goalStatus === 'ACTIVE' ? 'active' : '';
+    const stepClass = goal.state === 'COMPLETED' ? 'completed' : goal.state === 'ACTIVE' ? 'active' : '';
 
-    const baseBorderColor = goalStatus === 'PENDING' ? 'var(--border-color)' : goal.color;
+    const baseBorderColor = goal.state === 'PENDING' ? 'var(--border-color)' : goal.color;
     const hoverBorderColor = `color-mix(in srgb, ${goal.color} 60%, white)`;
 
     useEffect(() => {
-        if (goalStatus === 'ACTIVE') {
+        if (goal.state === 'ACTIVE') {
             const activeElement = document.querySelector('.step.active');
             if (activeElement) {
                 activeElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             }
         }
-    }, [goalStatus]);
+    }, [goal.state]);
     return (
         <div className={`step ${stepClass}`}
             onMouseEnter={() => setIsHovered(true)}
@@ -65,10 +43,10 @@ const GoalComponent: React.FC<{
         >
             <div className="node"
                 style={{
-                    backgroundColor: goalStatus === 'PENDING' ? 'var(--input-bg)' : `color-mix(in srgb, ${goal.color} 40%, transparent)`,
+                    backgroundColor: goal.state === 'PENDING' ? 'var(--input-bg)' : `color-mix(in srgb, ${goal.color} 40%, transparent)`,
                     borderColor: isHovered ? hoverBorderColor : baseBorderColor
                 }}
-            >{goalStatus === 'COMPLETED' ? '✔' :
+            >{goal.state === 'COMPLETED' ? '✔' :
                 goal.number}</div>
             <div className="label-group">
                 <span className="step-title">{goal.title}</span>
