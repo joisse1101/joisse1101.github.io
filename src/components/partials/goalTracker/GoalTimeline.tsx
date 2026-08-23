@@ -1,9 +1,9 @@
 import { getStatusColor, interpolateColors } from "@/utils/colours";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type GoalStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
 
-export const GoalTracker = () => {
+export const GoalTimeline = () => {
     const [goal, setGoals] = useState<number[]>([1, 5, 30, 100, 200, 300, 500, 750]);
 
     const generatedPalette =
@@ -13,19 +13,9 @@ export const GoalTracker = () => {
         ];
     return (
         <div className="card">
-            {/* <div className="palette-preview" id="palette-preview">
-                {generatedPalette.map((hexCode, idx) => (
-                    <div
-                        key={`${hexCode}-${idx}`}
-                        className="palette-swatch"
-                        style={{ backgroundColor: hexCode }}
-                        title={hexCode}
-                    >{hexCode}</div>
-                ))}
-            </div> */}
             <div className="horizontal-tracker">
                 {goal.map((goalNumber, idx) => {
-                    const goalStatus: GoalStatus = idx < 2 ? 'COMPLETED' : idx === 2 ? 'ACTIVE' : 'PENDING';
+                    const goalStatus: GoalStatus = idx < 5 ? 'COMPLETED' : idx === 5 ? 'ACTIVE' : 'PENDING';
                     return (
                         <GoalComponent
                             key={idx}
@@ -59,6 +49,15 @@ const GoalComponent: React.FC<{
 
     const baseBorderColor = goalStatus === 'PENDING' ? 'var(--border-color)' : goal.color;
     const hoverBorderColor = `color-mix(in srgb, ${goal.color} 60%, white)`;
+
+    useEffect(() => {
+        if (goalStatus === 'ACTIVE') {
+            const activeElement = document.querySelector('.step.active');
+            if (activeElement) {
+                activeElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+    }, [goalStatus]);
     return (
         <div className={`step ${stepClass}`}
             onMouseEnter={() => setIsHovered(true)}

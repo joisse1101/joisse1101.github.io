@@ -2,9 +2,9 @@ import Tabs, { type TabItem } from "@/components/Tabs";
 import { WeekSelector, type WeekState } from "@/components/WeekSelector";
 import { useState } from "react";
 import { getDatesInRange } from "@/utils/dates";
-import { GoalTracker } from "@/components/habitTracker/GoalTracker";
+import { GoalTimeline } from "@/components/partials/goalTracker/GoalTimeline";
 
-export default function HabitTracker() {
+export default function GoalTracker() {
     const [activeTab, setActiveTab] = useState<string>('walking-tab');
 
     const [currWeekState, setCurrWeekState] = useState<WeekState>({
@@ -19,7 +19,7 @@ export default function HabitTracker() {
             label: 'Walking',
             content: (
                 <div>
-                    <GoalTracker />
+                    <GoalTimeline />
                     <WeekSelector
                         weekState={currWeekState}
                         onWeekChange={(newWeekState) => setCurrWeekState(newWeekState)}

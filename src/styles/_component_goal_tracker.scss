@@ -17,6 +17,7 @@
   position: relative;
   width: 100%;
   padding: var(--card-padding-sm) 0;
+  overflow-y: auto;
 
   // Single horizontal line extending across all nodes
   &::before {
