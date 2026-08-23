@@ -21,3 +21,13 @@ export function getLocalDateKey(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+export function getDaysBetween(date1: Date, date2: Date): number {
+  // Normalize both dates to local midnight (00:00:00)
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+
+  const diffInMs = Math.abs(d2.getTime() - d1.getTime());
+  
+  return Math.round(diffInMs / (1000 * 60 * 60 * 24));
+};

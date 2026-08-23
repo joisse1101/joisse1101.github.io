@@ -1,10 +1,11 @@
 import type { WeekState } from "@components/WeekSelector";
 import { useEffect, useState } from "react";
-import { getDatesInRange, getLocalDateKey } from "@/utils/dates";
+import { getDatesInRange, getDaysBetween, getLocalDateKey } from "@/utils/dates";
 import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
 
 export type GoalStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
+export type GoalType = 'normal' | 'stretch'
 
 export type GoalState = {
     number: number;
@@ -12,6 +13,7 @@ export type GoalState = {
     subtitle: string;
     color: string;
     state: GoalStatus;
+    type: GoalType;
 };
 
 export type GoalTrackerState = {
@@ -56,20 +58,57 @@ export const useGoalTracker = () => {
     }, [progressOnDates]);
 
     const datesInWeek = getDatesInRange(currWeekState.startDate, currWeekState.endDate);
+    const daysInTracker = getDaysBetween(goalTrackerState.startDate, goalTrackerState.endDate) + 1;
+    const daysTracked = Object.entries(progressOnDates).reduce((count, [date, _]) => dateIsTracked(date) ? count + 1 : count, 0);
+    const weekendDates = datesInWeek.filter((date) => {
+        const day = date.getDay();
+        return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
+    });
+    const weekdaysDates = datesInWeek.filter((date) => {
+        const day = date.getDay();
+        return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
+    });
+    const weekendsLeft = weekendDates.filter((date) => {
+        const dateKey = getLocalDateKey(date);
+        return !progressOnDates[dateKey];
+    });
+    const weekdaysLeft = weekdaysDates.filter((date) => {
+        const dateKey = getLocalDateKey(date);
+        return !progressOnDates[dateKey];
+    });
+
+
     const goalTargets: number[] = goalTrackerState.goalTargets;
+
+    const currentProgress = Object.entries(progressOnDates).reduce((sum, [date, progress]) => dateIsTracked(date) ? sum + (parseFloat(progress) || 0) : sum, 0);
+    const currentProgressInWeek = datesInWeek.reduce((sum, date) => sum + (parseFloat(getProgressForDate(date)) || 0), 0);
+    const targetProgressPerDay = parseFloat((goalTargets[goalTargets.length - 1] / ((daysInTracker - daysTracked) || 1)).toFixed(2));
+    const targetProgressPerWeek = parseFloat((targetProgressPerDay * 7).toFixed(2));
+    const targetWeekendProgress = parseFloat((weekendsLeft.length == 0 ? 0 :
+        (targetProgressPerWeek - currentProgressInWeek - (weekdaysLeft.length * goalTrackerState.expectedProgressPerDay)) / weekendsLeft.length).toFixed(2));
+
+    const goalTypes = goalTargets.map((number) => number <= goalTrackerState.expectedProgressPerDay * daysInTracker ? 'normal' : 'stretch');
+    const numNormalGoals = goalTargets.filter((number) => number <= goalTrackerState.expectedProgressPerDay * daysInTracker).length;
+
     const goalColors = [
-        ...interpolateColors(getStatusColor('danger'), getStatusColor('warning'), goalTargets.length / 2 - 2),
-        ...interpolateColors(getStatusColor('warning'), getStatusColor('success'), goalTargets.length / 2 - 1).slice(1)
+        ...interpolateColors(getStatusColor('danger'), getStatusColor('warning'), Math.floor(numNormalGoals / 2) - 2),
+        ...interpolateColors(getStatusColor('warning'), getStatusColor('success'), numNormalGoals - Math.floor(numNormalGoals / 2) - 1).slice(1),
+        ...interpolateColors(getStatusColor('success'), getStatusColor('stretch'), goalTargets.length - numNormalGoals - 1).slice(1)
     ];
-    const currentProgress = datesInWeek.reduce((sum, date) => sum + (parseFloat(getProgressForDate(date)) || 0), 0);
     const activeGoalIdx = goalTargets.findIndex((goal) => goal > currentProgress);
     const goals: GoalState[] = goalTargets.map((number, idx) => ({
         number,
         title: `${number} km`,
         subtitle: `Subtitle ${number}`,
         color: goalColors[idx],
-        state: idx == activeGoalIdx ? 'ACTIVE' : idx < activeGoalIdx ? 'COMPLETED' : 'PENDING'
+        state: activeGoalIdx == -1 ? 'COMPLETED' : idx == activeGoalIdx ? 'ACTIVE' : idx < activeGoalIdx ? 'COMPLETED' : 'PENDING',
+        type: goalTypes[idx]
     }));
+
+    function dateIsTracked(dateKey: string): boolean {
+        const date = new Date(dateKey);
+        return date >= goalTrackerState.startDate && date <= goalTrackerState.endDate;
+    }
 
     function incrementWeek(increment: number) {
         setCurrWeek((prevWeek) => {
@@ -85,7 +124,15 @@ export const useGoalTracker = () => {
     }
     function setProgressForDate(date: Date, progress: string) {
         const dateKey = getLocalDateKey(date);
-        setProgressOnDates((prev) => ({ ...prev, [dateKey]: progress }));
+        setProgressOnDates((prev) => {
+            const newProgressOnDates = { ...prev };
+            if (progress === '') {
+                delete newProgressOnDates[dateKey];
+            } else {
+                newProgressOnDates[dateKey] = progress;
+            }
+            return newProgressOnDates;
+        });
     }
 
     function updateProgressPerDay(val: number) {
@@ -106,5 +153,5 @@ export const useGoalTracker = () => {
         updateTargets(targets.sort((a, b) => a - b));
     }
 
-    return { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState };
+    return { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress };
 };

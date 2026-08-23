@@ -7,7 +7,7 @@ import { useGoalTracker } from "@/hooks/useGoalTracker";
 export default function GoalTracker() {
     const [activeTab, setActiveTab] = useState<string>('walking-tab');
 
-    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState } = useGoalTracker();
+    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress } = useGoalTracker();
 
     const tabItems: TabItem[] = [
         {
@@ -21,15 +21,18 @@ export default function GoalTracker() {
                         incrementWeek={incrementWeek}
                     />
                     <div className="stacked">
-                        {datesInWeek.map((date) => (
-                            <div key={date.toISOString()} className="side-by-side">
-                                <span style={{ width: '150px', display: 'inline-block' }}>
-                                    {date.toDateString()}
-                                </span>
-                                <input type="number" className="no-spinner" min="0" placeholder={goalTrackerState.expectedProgressPerDay.toString()} value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
-                                <span>km</span>
-                            </div>
-                        ))}
+                        {datesInWeek.map((date) => {
+                            const placeholder = weekendDates.includes(date) ? targetWeekendProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
+                            return (
+                                <div key={date.toISOString()} className="side-by-side">
+                                    <span style={{ width: '150px', display: 'inline-block' }}>
+                                        {date.toDateString()}
+                                    </span>
+                                    <input type="number" step="any" className="no-spinner" min="0" placeholder={placeholder} value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
+                                    <span>km</span>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             )
