@@ -21,6 +21,7 @@ export default defineConfig({
       input: {
         main: path.resolve(import.meta.dirname, 'index.html'),
         grannySquare: path.resolve(import.meta.dirname, 'projects/granny-square/index.html'),
+        goalTracker: path.resolve(import.meta.dirname, 'projects/goal-tracker/index.html'),
       }
     }
   }
