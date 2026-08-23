@@ -1,0 +1,103 @@
+@use 'variables' as *;
+
+.modal {
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+    max-width: 500px;
+    width: 90vw;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+
+    /* Entry Animation */
+    &[open] {
+        animation: modalScaleIn var(--transition-speed) ease-out;
+    }
+
+    /* Dark Overlay / Backdrop */
+    &::backdrop {
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        animation: backdropFadeIn var(--transition-speed) ease-out;
+    }
+
+    /* Structural BEM Blocks */
+    &-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--card-padding-md);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    &-title {
+        font-family: var(--font-family-display);
+        font-size: var(--font-xl);
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    &-close-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: var(--font-lg);
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-sm);
+        transition: color var(--transition-speed), background-color var(--transition-speed);
+
+        &:hover {
+            color: var(--text-main);
+            background-color: var(--bg-surface-hover);
+        }
+    }
+
+    &-body {
+        padding: var(--card-padding-md);
+        font-family: var(--font-family-body);
+        font-size: var(--font-base);
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    &-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: var(--card-padding-md);
+        // border-top: 1px solid var(--border-subtle);
+        // background-color: var(--bg-main);
+    }
+}
+
+/* Keyframe Animations */
+@keyframes modalScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes backdropFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

@@ -53,6 +53,22 @@ label {
 // ==========================================================================
 // Standard Form Control Classes
 // ==========================================================================
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 // Shared Field Group Layout
 .form-group {
@@ -63,6 +79,17 @@ label {
   label {
     @extend %label-base;
     margin-bottom: 0; // Handled by container flex gap
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+
+  >.form-group,
+  >.input-wrapper {
+    flex: 1;
+    min-width: 0; // Prevents flex children from overflowing
   }
 }
 
@@ -78,6 +105,7 @@ select {
 
 // Dark-Mode Optimization for Number Spin Buttons
 input[type="number"] {
+
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     filter: invert(0.8) hue-rotate(180deg);
@@ -94,8 +122,6 @@ input[type="number"].no-spinner {
     -webkit-appearance: none;
     margin: 0;
   }
-  
-  text-align: center;
 }
 
 // ==========================================================================
@@ -106,7 +132,7 @@ input[type="color"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  
+
   width: 2.25rem;
   height: 2.25rem;
   padding: 0;
@@ -149,6 +175,56 @@ input[type="color"] {
   &:focus {
     outline: none;
     box-shadow: $shadow-focus-ring;
+  }
+}
+
+// ==========================================================================
+// Custom Datepicker Inputs
+// ==========================================================================
+input[type="date"] {
+  color-scheme: dark;
+  accent-color: var(--brand-accent);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input[type="date"] {
+    @extend %input-base;
+    padding-right: 2.5rem; // Leave space for the icon on the right
+
+    // Hide native browser indicator completely
+    &::-webkit-calendar-picker-indicator {
+      display: none;
+      -webkit-appearance: none;
+    }
+  }
+
+  .input-icon {
+    position: absolute;
+    right: 0.75rem;
+    cursor: pointer;
+    transition: stroke 0.2s ease, transform 0.15s ease;
+    stroke: var(--brand-accent); // Default stroke color for the SVG icon
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+
+    &:hover {
+      stroke: var(--brand-hover); // Directly updates SVG stroke on hover!
+      transform: scale(1.1);
+    }
+  }
+
+  .input-suffix {
+    position: absolute;
+    right: 0.75rem;
+    font-size: $font-sm;
+    color: $text-dim;
+    pointer-events: none; // Prevents interaction with the suffix text
   }
 }
 

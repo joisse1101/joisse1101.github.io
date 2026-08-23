@@ -7,7 +7,7 @@ export function getDatesInRange(startDate: Date, endDate: Date): Date[] {
   while (currentDate <= endDate) {
     // Push a fresh copy of the current date into the array
     dates.push(new Date(currentDate));
-    
+
     // Mutate the loop variable to move forward by 1 day
     currentDate.setDate(currentDate.getDate() + 1);
   }

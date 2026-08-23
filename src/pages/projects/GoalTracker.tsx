@@ -7,7 +7,7 @@ import { useGoalTracker } from "@/hooks/useGoalTracker";
 export default function GoalTracker() {
     const [activeTab, setActiveTab] = useState<string>('walking-tab');
 
-    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate } = useGoalTracker();
+    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState } = useGoalTracker();
 
     const tabItems: TabItem[] = [
         {
@@ -15,7 +15,7 @@ export default function GoalTracker() {
             label: 'Walking',
             content: (
                 <div>
-                    <GoalTimeline goals={goals} />
+                    <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
                     <WeekSelector
                         weekState={currWeekState}
                         incrementWeek={incrementWeek}
@@ -26,7 +26,7 @@ export default function GoalTracker() {
                                 <span style={{ width: '150px', display: 'inline-block' }}>
                                     {date.toDateString()}
                                 </span>
-                                <input type="number" className="no-spinner" min="0" placeholder="21" value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
+                                <input type="number" className="no-spinner" min="0" placeholder={goalTrackerState.expectedProgressPerDay.toString()} value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
                                 <span>km</span>
                             </div>
                         ))}

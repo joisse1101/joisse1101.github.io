@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import type { GoalState } from "@/hooks/useGoalTracker";
+import { ConfigureGoalModal } from "./ConfigureGoalModal";
+import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 
-export const GoalTimeline = ({ goals }: { goals: GoalState[] }) => {
+export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (progressPerDay: number, start: Date, end: Date, targets: number[]) => void }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     return (
-        <div className="card">
-            <div className="horizontal-tracker">
-                {goals.map((goal, idx) => {
-                    return (
-                        <GoalComponent
-                            key={idx}
-                            goal={goal}
-                        />
-                    );
-                })}
+        <>
+            <div className="card">
+                <div className="horizontal-tracker">
+                    {goals.map((goal, idx) => {
+                        return (
+                            <GoalComponent
+                                key={idx}
+                                goal={goal}
+                            />
+                        );
+                    })}
+                </div>
+                <button onClick={() => setIsModalOpen(true)}>Configure Goal</button>
             </div>
-
-        </div>
+            <ConfigureGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
+        </>
     );
 };
 

@@ -1,4 +1,5 @@
 import { clampValue } from '@/utils/numbers';
+import { getStorageItem } from '@/utils/storage';
 import { useEffect, useState } from 'react';
 
 export type GrannyGridState = {
@@ -23,14 +24,7 @@ const STORAGE_KEYS = {
     NUM_PATTERNS: 'granny_num_patterns',
 };
 
-const getStorageItem = <T>(key: string, defaultValue: T): T => {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultValue;
-    } catch {
-        return defaultValue;
-    }
-};
+
 
 export const useGrannySquare = () => {
     const [grannyGridState, setGrannyGridState] = useState<GrannyGridState>(() =>
