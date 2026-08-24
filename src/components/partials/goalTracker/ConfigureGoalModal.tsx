@@ -7,7 +7,7 @@ interface ConfigureGoalModalProps {
     isOpen: boolean;
     onClose: () => void;
     goalTrackerState: GoalTrackerState;
-    updateGoalTrackerState: (progressPerDay: number, start: Date, end: Date, targets: number[]) => void;
+    updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[]) => void;
 }
 
 export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
@@ -17,6 +17,7 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     updateGoalTrackerState
 }) => {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
+    const [goalTitle, setGoalTitle] = useState<string>(goalTrackerState.goalTitle ?? '');
     const [startDate, setStartDate] = useState<string>(goalTrackerState.startDate.toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState<string>(goalTrackerState.endDate.toISOString().split('T')[0]);
     const [expectedProgress, setExpectedProgress] = useState<number | ''>(goalTrackerState.expectedProgressPerDay);
@@ -60,6 +61,7 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             .map((item) => Number(item.trim()));
 
         updateGoalTrackerState(
+            goalTitle,
             parseFloat(expectedProgress as string),
             new Date(startDate),
             new Date(endDate),
@@ -78,7 +80,7 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             <div className='form-container'>
                 <div className="form-group">
                     <label htmlFor="goal-title">Goal Name:</label>
-                    <input type="text" id="goal-title" name="goal-title" placeholder="What is your goal?" />
+                    <input type="text" id="goal-title" name="goal-title" placeholder="What is your goal?" value={goalTitle} onChange={(e) => setGoalTitle(e.target.value)} />
                 </div>
                 <div className='form-row'>
                     <DateInput label="Start Date:" id="start-date" name="start-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />

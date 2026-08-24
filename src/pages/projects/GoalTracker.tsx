@@ -12,7 +12,7 @@ export default function GoalTracker() {
     const tabItems: TabItem[] = [
         {
             id: 'walking-tab',
-            label: 'Walking',
+            label: goalTrackerState.goalTitle || 'Your Goal',
             content: (
                 <div>
                     <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />

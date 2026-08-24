@@ -16,6 +16,7 @@ export type GoalState = {
 };
 
 export type GoalTrackerState = {
+    goalTitle: string;
     startDate: Date;
     endDate: Date;
     expectedProgressPerDay: number;
@@ -30,6 +31,7 @@ const STORAGE_KEYS = {
 
 export const useGoalTracker = () => {
     const [goalTrackerState, setGoalTrackerState] = useState<GoalTrackerState>(getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
+        goalTitle: 'Your Goal',
         startDate: new Date(2026, 7, 21),
         endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // Default to one week later
         expectedProgressPerDay: 5,
@@ -86,7 +88,7 @@ export const useGoalTracker = () => {
     const targetWeekendProgress = parseFloat((weekendsLeft.length == 0 ? 0 :
         (targetProgressPerWeek - currentProgressInWeek - (weekdaysLeft.length * goalTrackerState.expectedProgressPerDay)) / weekendsLeft.length).toFixed(2));
 
-    const goalTypes = goalTargets.map((number) => number <= goalTrackerState.expectedProgressPerDay * daysInTracker ? 'normal' : 'stretch');
+    const goalType = goalTargets.map((number) => number <= goalTrackerState.expectedProgressPerDay * daysInTracker ? 'normal' : 'stretch');
     const numNormalGoals = goalTargets.filter((number) => number <= goalTrackerState.expectedProgressPerDay * daysInTracker).length;
 
     const goalColors = [
@@ -98,10 +100,10 @@ export const useGoalTracker = () => {
     const goals: GoalState[] = goalTargets.map((number, idx) => ({
         number,
         title: `${number} km`,
-        subtitle: `Subtitle ${number}`,
+        subtitle: goalType[idx] === 'stretch' ? 'Stretch' : '',
         color: goalColors[idx],
         state: activeGoalIdx == -1 ? 'COMPLETED' : idx == activeGoalIdx ? 'ACTIVE' : idx < activeGoalIdx ? 'COMPLETED' : 'PENDING',
-        type: goalTypes[idx]
+        type: goalType[idx]
     }));
 
     function dateIsTracked(dateKey: string): boolean {
@@ -134,6 +136,10 @@ export const useGoalTracker = () => {
         });
     }
 
+    function updateGoalTitle(title: string) {
+        setGoalTrackerState((prev) => ({ ...prev, goalTitle: title }));
+    }
+
     function updateProgressPerDay(val: number) {
         setGoalTrackerState((prev) => ({ ...prev, expectedProgressPerDay: val }));
     };
@@ -146,11 +152,12 @@ export const useGoalTracker = () => {
         setGoalTrackerState((prev) => ({ ...prev, goalTargets: targets }));
     };
 
-    function updateGoalTrackerState(progressPerDay: number, start: Date, end: Date, targets: number[]) {
+    function updateGoalTrackerState(title: string, progressPerDay: number, start: Date, end: Date, targets: number[]) {
+        updateGoalTitle(title);
         updateProgressPerDay(progressPerDay);
         updateDateRange(start, end);
         updateTargets(targets.sort((a, b) => a - b));
     }
 
-    return { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress };
+    return { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress, updateGoalTitle };
 };

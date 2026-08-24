@@ -3,7 +3,7 @@ import type { GoalState } from "@/hooks/useGoalTracker";
 import { ConfigureGoalModal } from "./ConfigureGoalModal";
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 
-export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (progressPerDay: number, start: Date, end: Date, targets: number[]) => void }) => {
+export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[]) => void }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     return (
         <>
