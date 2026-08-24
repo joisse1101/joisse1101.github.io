@@ -7,7 +7,7 @@
   margin-bottom: 1.5rem; //
 
   .tab-btn {
-    padding: 0.625rem 1rem; //
+    padding: 0.15rem 1rem; //
     cursor: pointer; //
     border: 1px solid transparent; //
     border-bottom: none; //
@@ -22,8 +22,13 @@
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; //
     margin-bottom: -1px; // Align active border seamlessly with header line
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
     // Hover state (only applies when not disabled)
-    &:hover:not(:disabled):not(.disabled) {
+    &:hover:not(:disabled):not(.disabled):not([aria-disabled="true"]) {
       color: $text-main; //
       background-color: $bg-surface-hover; //
       box-shadow: $shadow-glow-md; //
@@ -45,7 +50,8 @@
 
     // Disabled state handling (handles both HTML attribute and class)
     &:disabled,
-    &.disabled {
+    &.disabled,
+    &[aria-disabled="true"] {
       color: $disabled-text; //
       cursor: not-allowed;
       opacity: 0.6;

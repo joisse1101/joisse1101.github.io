@@ -2,7 +2,7 @@ import React, { useState, type ReactNode } from 'react';
 
 export interface TabItem {
     id: string;
-    label: string;
+    label: ReactNode;
     content: ReactNode;
     disabled?: boolean;
 }
@@ -12,6 +12,8 @@ interface TabsProps {
     defaultActiveId?: string;
     activeId?: string;
     onTabChange?: (tabId: string) => void;
+    onTabDelete?: (tabId: string) => void;
+    onTabAdd?: () => void;
 }
 
 export const Tabs: React.FC<TabsProps> = ({
@@ -19,6 +21,8 @@ export const Tabs: React.FC<TabsProps> = ({
     defaultActiveId,
     activeId: controlledActiveId,
     onTabChange,
+    onTabDelete,
+    onTabAdd,
 }) => {
     const [internalActiveId, setInternalActiveId] = useState<string>(
         defaultActiveId || tabs[0]?.id || ''
@@ -43,18 +47,38 @@ export const Tabs: React.FC<TabsProps> = ({
                 {tabs.map((tab) => {
                     const isActive = tab.id === activeTabId;
                     return (
-                        <button
+                        <div
                             key={tab.id}
-                            type="button"
                             className={`tab-btn ${isActive ? 'active' : ''}`}
                             data-tab={tab.id}
-                            disabled={tab.disabled}
                             onClick={() => handleTabClick(tab.id, tab.disabled)}
+                            role="button"
+                            aria-disabled={tab.disabled}
                         >
                             {tab.label}
-                        </button>
+                            {onTabDelete && (
+                                <button
+                                    className="btn btn-danger btn-icon"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onTabDelete(tab.id);
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
                     );
                 })}
+                {onTabAdd && (
+                    <button
+                        type="button"
+                        className="tab-btn"
+                        onClick={onTabAdd}
+                    >
+                        + Add Tab
+                    </button>
+                )}
             </div>
 
             {/* Tab Contents */}

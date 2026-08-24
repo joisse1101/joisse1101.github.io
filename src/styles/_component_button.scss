@@ -177,6 +177,29 @@ button,
       transform: none !important;
     }
   }
+
+  &-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  min-height: 0;
+  min-width: 0;
+  height: fit-content;        /* Collapses height to fit content strictly */
+  width: fit-content;         /* Collapses width to fit content strictly */
+  
+  padding: $btn-padding-icon;        
+  line-height: 1;             
+  align-self: center;       
+  
+  border: none;
+  background-color: transparent;
+
+    svg {
+      width: 1em;
+      height: 1em;
+    }
+  }
 }
 
 

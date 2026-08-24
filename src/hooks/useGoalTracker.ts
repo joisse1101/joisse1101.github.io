@@ -23,13 +23,63 @@ export type GoalTrackerState = {
     goalTargets: number[];
 };
 
-const STORAGE_KEYS = {
+const STORAGE_KEY_PREFIXES = {
     TRACKER_STATE: 'goal_tracker_state',
     PROGRESS_ON_DATES: 'goal_tracker_progress_on_dates',
     CURRENT_WEEK_STATE: 'goal_tracker_current_week_state',
 };
 
-export const useGoalTracker = () => {
+function getStorageKeys(id: string) {
+    return {
+        TRACKER_STATE: `${STORAGE_KEY_PREFIXES.TRACKER_STATE}_${id}`,
+        PROGRESS_ON_DATES: `${STORAGE_KEY_PREFIXES.PROGRESS_ON_DATES}_${id}`,
+        CURRENT_WEEK_STATE: `${STORAGE_KEY_PREFIXES.CURRENT_WEEK_STATE}_${id}`,
+    };
+}
+
+export function getGoalTitleFromStorage(id: string): string {
+    const trackerStateKey = `${STORAGE_KEY_PREFIXES.TRACKER_STATE}_${id}`;
+    const storedState = localStorage.getItem(trackerStateKey);
+    if (storedState) {
+        try {
+            const parsedState = JSON.parse(storedState);
+            return parsedState.goalTitle || 'Your Goal';
+        } catch {
+            return 'Your Goal';
+        }
+    }
+    return 'Your Goal';
+}
+
+export function useGoalTitle(id: string): string {
+    const [title, setTitle] = useState<string>(() => getGoalTitleFromStorage(id));
+
+    useEffect(() => {
+        const handleTitleUpdate = (e: CustomEvent<{ id: string; title: string }>) => {
+            // Only update if the event matches this specific tab ID
+            if (e.detail?.id === id) {
+                setTitle(e.detail.title);
+            }
+        };
+
+        window.addEventListener('goal_title_changed', handleTitleUpdate as EventListener);
+        return () => {
+            window.removeEventListener('goal_title_changed', handleTitleUpdate as EventListener);
+        };
+    }, [id]);
+
+    return title;
+}
+
+export function deleteGoalStorage(id: string) { 
+    const STORAGE_KEYS = getStorageKeys(id);
+    localStorage.removeItem(STORAGE_KEYS.TRACKER_STATE);
+    localStorage.removeItem(STORAGE_KEYS.PROGRESS_ON_DATES);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_WEEK_STATE);
+}
+
+export const useGoalTracker = (id: string) => {
+    const STORAGE_KEYS = getStorageKeys(id);
     const [goalTrackerState, setGoalTrackerState] = useState<GoalTrackerState>(getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
         goalTitle: 'Your Goal',
         startDate: new Date(2026, 7, 21),
@@ -138,6 +188,11 @@ export const useGoalTracker = () => {
 
     function updateGoalTitle(title: string) {
         setGoalTrackerState((prev) => ({ ...prev, goalTitle: title }));
+        window.dispatchEvent(
+            new CustomEvent('goal_title_changed', {
+                detail: { id: id, title: title || 'Your Goal' },
+            })
+        );
     }
 
     function updateProgressPerDay(val: number) {

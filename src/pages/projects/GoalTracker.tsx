@@ -1,51 +1,57 @@
 import Tabs, { type TabItem } from "@/components/Tabs";
-import { WeekSelector } from "@/components/WeekSelector";
-import { useState } from "react";
-import { GoalTimeline } from "@/components/partials/goalTracker/GoalTimeline";
-import { useGoalTracker } from "@/hooks/useGoalTracker";
+import { useEffect, useState } from "react";
+import { TrackerTab } from "@/components/partials/goalTracker/TrackerTab";
+import { getStorageItem } from "@/utils/storage";
+import { useGoalTitle, deleteGoalStorage } from "@/hooks/useGoalTracker";
+
+const STORAGE_KEY = 'goal_tracker_tab_ids';
 
 export default function GoalTracker() {
-    const [activeTab, setActiveTab] = useState<string>('walking-tab');
+    const [tabIds, setTabIds] = useState<string[]>(getStorageItem(STORAGE_KEY, [crypto.randomUUID()]));
+    const [activeTab, setActiveTab] = useState<string>(tabIds[0]);
 
-    const { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, weekendDates, targetWeekendProgress } = useGoalTracker();
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tabIds));
+    }, [tabIds]);
 
-    const tabItems: TabItem[] = [
-        {
-            id: 'walking-tab',
-            label: goalTrackerState.goalTitle || 'Your Goal',
-            content: (
-                <div className="output-flex-wrapper stacked">
-                    <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
-                    <WeekSelector
-                        weekState={currWeekState}
-                        incrementWeek={incrementWeek}
-                    />
-                    <div className="stacked">
-                        {datesInWeek.map((date) => {
-                            const placeholder = weekendDates.includes(date) ? targetWeekendProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
-                            return (
-                                <div key={date.toISOString()} className="side-by-side">
-                                    <span style={{ width: '150px', display: 'inline-block' }}>
-                                        {date.toDateString()}
-                                    </span>
-                                    <input type="number" step="any" className="no-spinner" min="0" placeholder={placeholder} value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
-                                    <span>km</span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            )
+
+    const tabItems: TabItem[] = tabIds.map((id) => ({
+        id: id,
+        label: <DynamicTabLabel id={id} />, // Or pull dynamic titles if managed globally
+        content: <TrackerTab id={id} />,
+    }));
+
+    function handleAddTab() {
+        const newId = crypto.randomUUID();
+        setTabIds([...tabIds, newId]);
+        setActiveTab(newId);
+    }
+
+    function handleDeleteTab(tabId: string) {
+        if (tabIds.length === 1) {
+            alert("You cannot delete the last remaining tab.");
+            return;
         }
-
-    ]
+        setTabIds(tabIds.filter(id => id !== tabId));
+        if (activeTab === tabId) {
+            setActiveTab(tabIds[0]);
+        }
+        deleteGoalStorage(tabId);
+    }
     return (
         <div className="app-wrapper">
             <Tabs
                 tabs={tabItems}
                 activeId={activeTab}
                 onTabChange={(tabId) => setActiveTab(tabId)}
+                onTabAdd={handleAddTab}
+                onTabDelete={tabIds.length > 1 ? handleDeleteTab : undefined}
             />
         </div>
     )
+};
+
+const DynamicTabLabel = ({ id }: { id: string }) => {
+    const title = useGoalTitle(id);
+    return <>{title}</>;
 };
