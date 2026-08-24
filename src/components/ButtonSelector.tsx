@@ -16,12 +16,12 @@ export const ButtonSelector: React.FC<ButtonSelectorProps> = ({ label, options, 
     const containerRef = useRef<HTMLDivElement | null>(null);
     const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
 
-    return (<div {...props}>
-        <label className="label">{label}</label>
+    return (<div className="form-group" {...props}>
+        <div id={label} className="label">{label}</div>
         <div className="overlay-wrapper">
             <div className={`overlay-left ${!canScrollLeft ? 'hidden' : ''}`} />
             <div className={`overlay-right ${!canScrollRight ? 'hidden' : ''}`} />
-            <div className="overlay-component" ref={containerRef}>
+            <div className="overlay-component" aria-labelledby={label} ref={containerRef}>
                 {options.map((option) => (
 
                     <button
