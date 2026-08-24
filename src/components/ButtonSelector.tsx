@@ -1,10 +1,6 @@
 import { useCanSideScroll } from "@/hooks/useCanSideScroll";
 import { useRef } from "react";
-
-export type Option = {
-    label: string;
-    value: string | number;
-}
+import type { Option } from "@/types/selectors";
 interface ButtonSelectorProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
     label: string;
     options: Option[];

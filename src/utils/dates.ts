@@ -32,6 +32,18 @@ export function getDaysBetween(date1: Date, date2: Date): number {
   return Math.round(diffInMs / (1000 * 60 * 60 * 24));
 };
 
+export function getMostRecentFirstDay(startDate: Date, firstDayOfWeek: number): Date {
+  const result = new Date(startDate);
+  const currentDay = result.getDay();
+
+  const diff = (currentDay - firstDayOfWeek + 7) % 7;
+
+  result.setDate(result.getDate() - diff);
+  result.setHours(0, 0, 0, 0);
+
+  return result;
+}
+
 export const DayIdx = {
   SUNDAY: 0,
   MONDAY: 1,

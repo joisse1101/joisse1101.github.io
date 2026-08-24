@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDatesInRange, getDaysBetween, getLocalDateKey } from "@/utils/dates";
+import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay } from "@/utils/dates";
 import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
 
@@ -22,6 +22,7 @@ export type GoalTrackerState = {
     expectedProgressPerDay: number;
     goalTargets: number[];
     overloadDays: number[]; // Optional property for overload days
+    firstDayOfWeek: number;
 };
 
 const STORAGE_KEY_PREFIXES = {
@@ -88,13 +89,17 @@ export const useGoalTracker = (id: string) => {
         expectedProgressPerDay: 5,
         goalTargets: [1, 5, 30, 100, 200, 300, 500, 750],
         overloadDays: [0, 6], // Default to Sunday and Saturday
+        firstDayOfWeek: 0, // Default to Sunday
+        units: 'km',
     }));
     const [progressOnDates, setProgressOnDates] = useState<Record<string, string>>(getStorageItem(STORAGE_KEYS.PROGRESS_ON_DATES, {}));
     const [currWeek, setCurrWeek] = useState<number>(1);
 
+    const firstDayOfTracker = getMostRecentFirstDay(goalTrackerState.startDate, goalTrackerState.firstDayOfWeek);
+
     const currWeekState = {
-        startDate: new Date(goalTrackerState.startDate.getTime() + (currWeek - 1) * 7 * 24 * 60 * 60 * 1000),
-        endDate: new Date(goalTrackerState.startDate.getTime() + (currWeek - 1) * 7 * 24 * 60 * 60 * 1000 + 6 * 24 * 60 * 60 * 1000),
+        startDate: new Date(firstDayOfTracker.getTime() + (currWeek - 1) * 7 * 24 * 60 * 60 * 1000),
+        endDate: new Date(firstDayOfTracker.getTime() + (currWeek - 1) * 7 * 24 * 60 * 60 * 1000 + 6 * 24 * 60 * 60 * 1000),
         week: currWeek
     }
 
@@ -214,12 +219,29 @@ export const useGoalTracker = (id: string) => {
         setGoalTrackerState((prev) => ({ ...prev, overloadDays }));
     }
 
-    function updateGoalTrackerState(title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) {
-        updateGoalTitle(title);
-        updateProgressPerDay(progressPerDay);
-        updateDateRange(start, end);
-        updateTargets(targets.sort((a, b) => a - b));
-        updateOverloadDays(overloadDays);
+    function updateFirstDayOfWeek(firstDayOfWeek: number) {
+        setGoalTrackerState((prev) => ({ ...prev, firstDayOfWeek }));
+    }
+
+    function updateGoalTrackerState(updates: Partial<GoalTrackerState>) {
+        if (updates.goalTitle !== undefined) {
+            updateGoalTitle(updates.goalTitle);
+        }
+        if (updates.expectedProgressPerDay !== undefined) {
+            updateProgressPerDay(updates.expectedProgressPerDay);
+        }
+        if (updates.startDate !== undefined && updates.endDate !== undefined) {
+            updateDateRange(updates.startDate, updates.endDate);
+        }
+        if (updates.goalTargets !== undefined) {
+            updateTargets(updates.goalTargets.sort((a, b) => a - b));
+        }
+        if (updates.overloadDays !== undefined) {
+            updateOverloadDays(updates.overloadDays);
+        }
+        if (updates.firstDayOfWeek !== undefined) {
+            updateFirstDayOfWeek(updates.firstDayOfWeek);
+        }
     }
 
     return { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, overloadDatesLeft, targetOverloadProgress, updateGoalTitle };

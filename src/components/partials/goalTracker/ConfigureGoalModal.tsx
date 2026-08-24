@@ -4,12 +4,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 import { ButtonSelector } from '@/components/ButtonSelector';
 import { DayOptions } from '@/utils/dates';
+import { RadioSelector } from '@/components/RadioSelector';
 
 interface ConfigureGoalModalProps {
     isOpen: boolean;
     onClose: () => void;
     goalTrackerState: GoalTrackerState;
-    updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) => void;
+    updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void;
 }
 
 export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
@@ -27,6 +28,7 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     const [errors, setErrors] = useState<string[]>([]);
 
     const [selectedOverloadDays, setSelectedOverloadDays] = useState<(string | number)[]>(goalTrackerState.overloadDays);
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState<string | number>(goalTrackerState.firstDayOfWeek);
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -78,12 +80,15 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             .map((item) => Number(item.trim()));
 
         updateGoalTrackerState(
-            goalTitle,
-            parseFloat(expectedProgress as string),
-            new Date(startDate),
-            new Date(endDate),
-            parsedTargets,
-            selectedOverloadDays.map((day) => Number(day))
+            {
+                goalTitle,
+                expectedProgressPerDay: parseFloat(expectedProgress as string),
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
+                goalTargets: parsedTargets,
+                overloadDays: selectedOverloadDays.map((day) => Number(day)),
+                firstDayOfWeek: firstDayOfWeek !== undefined ? Number(firstDayOfWeek) : 0
+            }
         );
         onClose();
         setErrors([]);
@@ -123,6 +128,12 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
                     selectedOptions={selectedOverloadDays}
                     onSelect={handleDaySelect}
                     title={'Select days of the week that you want to set as overload days. These days will be used to make up for missed progress.'}
+                />
+                <RadioSelector
+                    label={'Select first day of week:'}
+                    options={DayOptions}
+                    selectedOptions={firstDayOfWeek}
+                    onSelect={setFirstDayOfWeek}
                 />
                 {errors.length > 0 &&
                     <div className='error-messages'>

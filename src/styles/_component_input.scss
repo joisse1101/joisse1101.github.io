@@ -77,7 +77,8 @@ label,
   flex-direction: column;
   gap: 0.375rem;
 
-  label, .label {
+  label,
+  .label {
     @extend %label-base;
     margin-bottom: 0; // Handled by container flex gap
   }
@@ -235,6 +236,114 @@ input[type="date"] {
     font-size: $font-sm;
     color: $text-dim;
     pointer-events: none; // Prevents interaction with the suffix text
+  }
+}
+
+
+// ==========================================================================
+// Native Radio Control Styling
+// ==========================================================================
+input[type="radio"] {
+  // 1. Reset OS default styles
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  // 2. Control Sizing & Centering
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  display: grid;
+  place-content: center;
+
+  // 3. Visual Base Surface
+  background-color: $input-bg;
+  border: 1px solid $input-border;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+
+  // 4. Custom Inner Radio Dot (Hidden by default via scale)
+  &::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--brand-accent, $text-main);
+    transform: scale(0);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // 5. Interactive States
+  &:hover:not(:disabled) {
+    border-color: var(--brand-accent, $input-focus-border);
+  }
+
+  &:checked {
+    border-color: var(--brand-accent, $input-focus-border);
+
+    &::before {
+      transform: scale(1); // Scale dot into view
+    }
+  }
+
+  // 6. Focus Ring (Keyboard Navigation)
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $input-focus-ring;
+  }
+
+  // 7. Disabled State
+  &:disabled {
+    background-color: $disabled-bg;
+    border-color: $input-border;
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &::before {
+      background-color: $disabled-text;
+    }
+  }
+}
+
+// ==========================================================================
+// Radio Option Wrapper & Horizontal Overlay Layout
+// ==========================================================================
+
+// Override global label resets (%label-base) specifically for radio options
+.form-group .radio-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: $font-sm;
+  font-weight: normal;
+  color: $text-main;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  // Target radio inside label on hover
+  &:hover input[type="radio"]:not(:disabled) {
+    border-color: var(--brand-accent, $input-focus-border);
+  }
+
+  // Highlighted pill container when selected
+  &.selected {
+    color: var(--brand-accent, $text-main);
+  }
+
+  // Disabled option state
+  &:has(input[type="radio"]:disabled) {
+    cursor: not-allowed;
+    color: $disabled-text;
   }
 }
 

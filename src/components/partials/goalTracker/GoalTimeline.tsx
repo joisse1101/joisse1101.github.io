@@ -4,7 +4,7 @@ import type { GoalState } from "@/hooks/useGoalTracker";
 import { ConfigureGoalModal } from "./ConfigureGoalModal";
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 
-export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) => void }) => {
+export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
