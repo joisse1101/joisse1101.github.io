@@ -8,11 +8,13 @@ export type WeekState = {
 type WeekSelectorProps = {
     weekState: WeekState;
     incrementWeek: (increment: number) => void;
+    maxWeeks: number; // Optional prop to limit the maximum number of weeks
 }
 
-export const WeekSelector = ({ weekState, incrementWeek }: WeekSelectorProps) => {
+export const WeekSelector = ({ weekState, incrementWeek, maxWeeks }: WeekSelectorProps) => {
     const { startDate, endDate, week } = weekState;
     const isDecrementDisabled = week <= 1; // Disable decrement button if week is 1 or less
+    const isIncrementDisabled = week >= maxWeeks; // Disable increment button if week is at maxWeeks
 
     const onIncrWeek = () => {
         incrementWeek(1);
@@ -32,7 +34,7 @@ export const WeekSelector = ({ weekState, incrementWeek }: WeekSelectorProps) =>
                 〈
             </button>
             <span>{weekString}</span>
-            <button className="btn btn-invisible" onClick={onIncrWeek}>
+            <button className="btn btn-invisible" onClick={onIncrWeek} disabled={isIncrementDisabled}>
                 〉
             </button>
         </div>

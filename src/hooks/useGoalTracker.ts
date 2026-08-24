@@ -108,6 +108,7 @@ export const useGoalTracker = (id: string) => {
         localStorage.setItem(STORAGE_KEYS.PROGRESS_ON_DATES, JSON.stringify(progressOnDates));
     }, [progressOnDates]);
 
+    const weeksInTracker = Math.ceil(getDaysBetween(goalTrackerState.startDate, goalTrackerState.endDate) / 7);
     const datesInWeek = getDatesInRange(currWeekState.startDate, currWeekState.endDate);
     const daysInTracker = getDaysBetween(goalTrackerState.startDate, goalTrackerState.endDate) + 1;
     const daysTracked = Object.entries(progressOnDates).reduce((count, [date, _]) => dateIsTracked(date) ? count + 1 : count, 0);
@@ -165,6 +166,7 @@ export const useGoalTracker = (id: string) => {
         setCurrWeek((prevWeek) => {
             const newWeek = prevWeek + increment;
             if (newWeek < 1) return prevWeek;
+            if (newWeek > weeksInTracker) return prevWeek;
             return newWeek;
         });
     };
@@ -214,5 +216,5 @@ export const useGoalTracker = (id: string) => {
         updateTargets(targets.sort((a, b) => a - b));
     }
 
-    return { currWeekState, incrementWeek, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress, updateGoalTitle };
+    return { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress, updateGoalTitle };
 };
