@@ -6,7 +6,7 @@ export const TrackerTab: React.FC<{ id: string }> = ({
     id,
 }) => {
 
-    const { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, weekendDates, targetWeekendProgress } = useGoalTracker(id);
+    const { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, overloadDatesLeft, targetOverloadProgress } = useGoalTracker(id);
 
     return (
         <div className="output-flex-wrapper stacked">
@@ -18,7 +18,9 @@ export const TrackerTab: React.FC<{ id: string }> = ({
             />
             <div className="stacked">
                 {datesInWeek.map((date) => {
-                    const placeholder = weekendDates.includes(date) ? targetWeekendProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
+                    const placeholder = overloadDatesLeft.some(
+                        (d) => d.toDateString() === date.toDateString()
+                    ) ? targetOverloadProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
                     const isDisabled = date < goalTrackerState.startDate || date > goalTrackerState.endDate;
                     return (
                         <div key={date.toISOString()} className="side-by-side">
