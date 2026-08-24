@@ -1,19 +1,6 @@
 @use 'variables' as *;
 
-// ==========================================================================
-// Base Layout & Page Wrappers
-// ==========================================================================
-.app-wrapper {
-  width: 100%;
-  max-width: $max-width;
-  margin-left: auto;
-  margin-right: auto;
-  color: $text-main;
 
-  >*+* {
-    margin-top: $card-gap-md;
-  }
-}
 
 // ==========================================================================
 // Responsive Output Flex Layout (Side-by-side on wide, stacked on small)
@@ -27,23 +14,6 @@
 
   @media (min-width: 1024px) {
     flex-direction: row; // Side-by-side on desktop
-  }
-
-  // Grid fills all remaining available space
-  #grid-container {
-    flex: 1 1 0%;
-    width: 100%;
-    min-width: 0; // Prevents grid overflow issues in flexbox
-  }
-
-  // Palette container only occupies as much width as needed for swatch + label
-  #palette-table-container {
-    flex: 0 0 auto;
-    width: 100%;
-
-    @media (min-width: 1024px) {
-      width: auto;
-    }
   }
 }
 

@@ -14,7 +14,7 @@ export default function GoalTracker() {
             id: 'walking-tab',
             label: goalTrackerState.goalTitle || 'Your Goal',
             content: (
-                <div>
+                <div className="output-flex-wrapper stacked">
                     <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
                     <WeekSelector
                         weekState={currWeekState}
