@@ -193,12 +193,21 @@ input[type="date"] {
 
   input[type="date"] {
     @extend %input-base;
-    padding-right: 2.5rem; // Leave space for the icon on the right
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    appearance: none;
 
-    // Hide native browser indicator completely
-    &::-webkit-calendar-picker-indicator {
-      display: none;
-      -webkit-appearance: none;
+    &::-webkit-date-and-time-value {
+      text-align: left;
+    }
+
+    // Completely hides the native calendar & arrow indicators
+    &::-webkit-calendar-picker-indicator,
+    &::-webkit-inner-spin-button,
+    &::-webkit-clear-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
     }
   }
 
