@@ -23,7 +23,7 @@ export const TrackerTab: React.FC<{ id: string }> = ({
                     ) ? targetOverloadProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
                     const isDisabled = date < goalTrackerState.startDate || date > goalTrackerState.endDate;
                     return (
-                        <div key={date.toISOString()} className="side-by-side">
+                        <div key={date.toISOString()} className="input-wrapper side-by-side">
                             <span style={{ width: '150px', display: 'inline-block' }}>
                                 {date.toDateString()}
                             </span>
@@ -36,7 +36,7 @@ export const TrackerTab: React.FC<{ id: string }> = ({
                                 disabled={isDisabled}
                                 value={getProgressForDate(date)}
                                 onChange={(e) => setProgressForDate(date, e.target.value)} />
-                            <span>km</span>
+                            {goalTrackerState.units && <span className="input-suffix">{goalTrackerState.units}</span>}
                         </div>
                     )
                 })}

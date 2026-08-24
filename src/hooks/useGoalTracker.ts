@@ -23,6 +23,7 @@ export type GoalTrackerState = {
     goalTargets: number[];
     overloadDays: number[]; // Optional property for overload days
     firstDayOfWeek: number;
+    units: string;
 };
 
 const STORAGE_KEY_PREFIXES = {
@@ -223,6 +224,10 @@ export const useGoalTracker = (id: string) => {
         setGoalTrackerState((prev) => ({ ...prev, firstDayOfWeek }));
     }
 
+    function updateUnits(units: string) {
+        setGoalTrackerState((prev) => ({ ...prev, units }));
+    }
+
     function updateGoalTrackerState(updates: Partial<GoalTrackerState>) {
         if (updates.goalTitle !== undefined) {
             updateGoalTitle(updates.goalTitle);
@@ -241,6 +246,9 @@ export const useGoalTracker = (id: string) => {
         }
         if (updates.firstDayOfWeek !== undefined) {
             updateFirstDayOfWeek(updates.firstDayOfWeek);
+        }
+        if (updates.units !== undefined) {
+            updateUnits(updates.units);
         }
     }
 

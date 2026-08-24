@@ -25,10 +25,11 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     const [endDate, setEndDate] = useState<string>(goalTrackerState.endDate.toISOString().split('T')[0]);
     const [expectedProgress, setExpectedProgress] = useState<number | ''>(goalTrackerState.expectedProgressPerDay);
     const [targets, setTargets] = useState<string>(goalTrackerState.goalTargets.join(','));
-    const [errors, setErrors] = useState<string[]>([]);
-
     const [selectedOverloadDays, setSelectedOverloadDays] = useState<(string | number)[]>(goalTrackerState.overloadDays);
     const [firstDayOfWeek, setFirstDayOfWeek] = useState<string | number>(goalTrackerState.firstDayOfWeek);
+    const [units, setUnits] = useState<string>(goalTrackerState.units);
+
+    const [errors, setErrors] = useState<string[]>([]);
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -68,6 +69,9 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
         if (selectedOverloadDays.length === 0) {
             newErrors.push('At least one overload day must be selected.');
         }
+        if (firstDayOfWeek === undefined || firstDayOfWeek === '') {
+            newErrors.push('First day of the week must be selected.');
+        }
 
 
         if (newErrors.length > 0) {
@@ -87,7 +91,8 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
                 endDate: new Date(endDate),
                 goalTargets: parsedTargets,
                 overloadDays: selectedOverloadDays.map((day) => Number(day)),
-                firstDayOfWeek: firstDayOfWeek !== undefined ? Number(firstDayOfWeek) : 0
+                firstDayOfWeek: firstDayOfWeek !== undefined ? Number(firstDayOfWeek) : 0,
+                units: units
             }
         );
         onClose();
@@ -135,6 +140,10 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
                     selectedOptions={firstDayOfWeek}
                     onSelect={setFirstDayOfWeek}
                 />
+                <div className="form-group">
+                    <label htmlFor="units">Units:</label>
+                    <input type="text" id="units" name="units" placeholder="e.g., km" value={units} onChange={(e) => setUnits(e.target.value)} />
+                </div>
                 {errors.length > 0 &&
                     <div className='error-messages'>
                         {errors.map((error, index) => (
