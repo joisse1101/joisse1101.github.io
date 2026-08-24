@@ -2,12 +2,14 @@ import { DateInput } from '@/components/DateInput';
 import { Modal } from '@/components/Modal';
 import React, { useRef, useEffect, useState } from 'react';
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
+import { ButtonSelector } from '@/components/ButtonSelector';
+import { DayOptions } from '@/utils/dates';
 
 interface ConfigureGoalModalProps {
     isOpen: boolean;
     onClose: () => void;
     goalTrackerState: GoalTrackerState;
-    updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[]) => void;
+    updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) => void;
 }
 
 export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
@@ -24,6 +26,8 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     const [targets, setTargets] = useState<string>(goalTrackerState.goalTargets.join(','));
     const [errors, setErrors] = useState<string[]>([]);
 
+    const [selectedOverloadDays, setSelectedOverloadDays] = useState<(string | number)[]>(goalTrackerState.overloadDays);
+
     useEffect(() => {
         const dialog = dialogRef.current;
         if (!dialog) return;
@@ -34,6 +38,16 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             if (dialog.open) dialog.close();
         }
     }, [isOpen]);
+
+    const handleDaySelect = (value: string | number) => {
+        setSelectedOverloadDays((prev) => {
+            if (prev.includes(value)) {
+                return prev.filter((v) => v !== value);
+            } else {
+                return [...prev, value];
+            }
+        });
+    };
 
     const handleValidateAndSubmit = () => {
         const newErrors: string[] = [];
@@ -48,6 +62,9 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             newErrors.push('Goal targets are required.')
         } else if (!/^\s*\d+(\s*,\s*\d+)*\s*$/.test(targets)) {
             newErrors.push('Goal targets must be a list of comma-separated numbers.');
+        }
+        if (selectedOverloadDays.length === 0) {
+            newErrors.push('At least one overload day must be selected.');
         }
 
 
@@ -65,16 +82,19 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
             parseFloat(expectedProgress as string),
             new Date(startDate),
             new Date(endDate),
-            parsedTargets
+            parsedTargets,
+            selectedOverloadDays.map((day) => Number(day))
         );
         onClose();
         setErrors([]);
     };
 
+
     return (
         <Modal
             isOpen={isOpen}
-            onClose={handleValidateAndSubmit}
+            onSubmit={handleValidateAndSubmit}
+            onClose={onClose}
             title={'Configure Goal'}
         >
             <div className='form-container'>
@@ -97,6 +117,13 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
                     <label htmlFor="targets">Goal Targets:</label>
                     <input type="text" id="targets" name="targets" placeholder="Enter a list of comma-separated numbers" value={targets} onChange={(e) => setTargets(e.target.value)} />
                 </div>
+                <ButtonSelector
+                    label={'Select overload days:'}
+                    options={DayOptions}
+                    selectedOptions={selectedOverloadDays}
+                    onSelect={handleDaySelect}
+                    title={'Select days of the week that you want to set as overload days. These days will be used to make up for missed progress.'}
+                />
                 {errors.length > 0 &&
                     <div className='error-messages'>
                         {errors.map((error, index) => (

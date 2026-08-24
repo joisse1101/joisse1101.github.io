@@ -21,6 +21,7 @@ export type GoalTrackerState = {
     endDate: Date;
     expectedProgressPerDay: number;
     goalTargets: number[];
+    overloadDays: number[]; // Optional property for overload days
 };
 
 const STORAGE_KEY_PREFIXES = {
@@ -86,6 +87,7 @@ export const useGoalTracker = (id: string) => {
         endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // Default to one week later
         expectedProgressPerDay: 5,
         goalTargets: [1, 5, 30, 100, 200, 300, 500, 750],
+        overloadDays: [0, 6], // Default to Sunday and Saturday
     }));
     const [progressOnDates, setProgressOnDates] = useState<Record<string, string>>(getStorageItem(STORAGE_KEYS.PROGRESS_ON_DATES, {}));
     const [currWeek, setCurrWeek] = useState<number>(1);
@@ -209,11 +211,16 @@ export const useGoalTracker = (id: string) => {
         setGoalTrackerState((prev) => ({ ...prev, goalTargets: targets }));
     };
 
-    function updateGoalTrackerState(title: string, progressPerDay: number, start: Date, end: Date, targets: number[]) {
+    function updateOverloadDays(overloadDays: number[]) {
+        setGoalTrackerState((prev) => ({ ...prev, overloadDays }));
+    }
+
+    function updateGoalTrackerState(title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) {
         updateGoalTitle(title);
         updateProgressPerDay(progressPerDay);
         updateDateRange(start, end);
         updateTargets(targets.sort((a, b) => a - b));
+        updateOverloadDays(overloadDays);
     }
 
     return { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, targetProgressPerDay, weekendDates, targetWeekendProgress, updateGoalTitle };

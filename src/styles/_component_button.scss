@@ -200,6 +200,34 @@ button,
       height: 1em;
     }
   }
+
+  &-option {
+    border-radius: 0;
+    background-color: $btn-option-bg;
+    color: $btn-option-text;
+    border-color: $btn-option-border;
+
+    &:hover:not(:disabled):not(.is-disabled) {
+      background-color: $btn-option-hover-bg;
+      border-color: $btn-option-hover-border;
+      color: $text-main;
+    }
+
+    &.selected {
+      background-color: $btn-option-hover-bg;
+      border-color: $btn-option-hover-border;
+      color: $text-main;
+    }
+
+    &:first-child {
+      border-top-left-radius: $radius-md;
+      border-bottom-left-radius: $radius-md;
+    }
+    &:last-child {
+      border-top-right-radius: $radius-md;
+      border-bottom-right-radius: $radius-md;
+    }
+  }
 }
 
 

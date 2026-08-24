@@ -19,12 +19,21 @@ export const TrackerTab: React.FC<{ id: string }> = ({
             <div className="stacked">
                 {datesInWeek.map((date) => {
                     const placeholder = weekendDates.includes(date) ? targetWeekendProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
+                    const isDisabled = date < goalTrackerState.startDate || date > goalTrackerState.endDate;
                     return (
                         <div key={date.toISOString()} className="side-by-side">
                             <span style={{ width: '150px', display: 'inline-block' }}>
                                 {date.toDateString()}
                             </span>
-                            <input type="number" step="any" className="no-spinner" min="0" placeholder={placeholder} value={getProgressForDate(date)} onChange={(e) => setProgressForDate(date, e.target.value)} />
+                            <input
+                                type="number"
+                                step="any"
+                                className="no-spinner"
+                                min="0"
+                                placeholder={isDisabled ? '-' : placeholder}
+                                disabled={isDisabled}
+                                value={getProgressForDate(date)}
+                                onChange={(e) => setProgressForDate(date, e.target.value)} />
                             <span>km</span>
                         </div>
                     )

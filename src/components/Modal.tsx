@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSubmit: () => void;
     title?: string;
     children?: React.ReactNode;
 }
@@ -12,6 +13,7 @@ export const Modal: React.FC<ModalProps> = ({
     onClose,
     title = '',
     children,
+    onSubmit,
 }) => {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
@@ -71,8 +73,7 @@ export const Modal: React.FC<ModalProps> = ({
                         type="button"
                         className="btn btn-primary"
                         onClick={() => {
-                            // Custom action here
-                            onClose();
+                            onSubmit();
                         }}
                     >
                         Save Changes

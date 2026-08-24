@@ -110,6 +110,13 @@ $btn-danger-active-bg: rgba($color-danger, 0.35);
 $btn-danger-outline-hover-bg: rgba($color-danger, 0.08); // Soft tint on hover
 $btn-danger-outline-active-bg: rgba($color-danger, 0.18); // Darker tint on click
 
+// Option Variants
+$btn-option-bg: $bg-surface;
+$btn-option-text: $text-main;
+$btn-option-border: $border-subtle;
+$btn-option-hover-bg: $bg-surface-hover;
+$btn-option-hover-border: $border-color;
+
 // --- Typography Specs ---
 $font-xs: 0.625rem; // 10px
 $font-sm: 0.75rem; // 12px
@@ -257,6 +264,12 @@ $max-width: 1200px;
   --btn-danger-active-bg: #{$btn-danger-active-bg};
   --btn-danger-outline-hover-bg: #{$btn-danger-outline-hover-bg};
   --btn-danger-outline-active-bg: #{$btn-danger-outline-active-bg};
+  
+  --btn-option-bg: #{$btn-option-bg};
+  --btn-option-text: #{$btn-option-text};
+  --btn-option-border: #{$btn-option-border};
+  --btn-option-hover-bg: #{$btn-option-hover-bg};
+  --btn-option-hover-border: #{$btn-option-hover-border};
 
   /* Sizes */
   --font-xs: #{$font-xs};

@@ -28,6 +28,33 @@ export function getDaysBetween(date1: Date, date2: Date): number {
   const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
 
   const diffInMs = Math.abs(d2.getTime() - d1.getTime());
-  
+
   return Math.round(diffInMs / (1000 * 60 * 60 * 24));
 };
+
+export const DayIdx = {
+  SUNDAY: 0,
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6,
+} as const;
+
+export type DayIdxType = typeof DayIdx[keyof typeof DayIdx];
+
+export function getDayName(idx: DayIdxType, type: 'long' | 'short' = 'long'): string {
+  // Jan 4, 1970 is a known Sunday base anchor
+  const date = new Date(1970, 0, 4 + idx);
+
+  return new Intl.DateTimeFormat(undefined, { weekday: type }).format(date);
+}
+
+export const DayOptions = Array.from({ length: 7 }, (_, idx) => {
+  const dayIdx = idx as DayIdxType;
+  return {
+    label: getDayName(dayIdx, 'short'),
+    value: dayIdx,
+  };
+});
