@@ -1,6 +1,7 @@
 import { WeekSelector } from "@/components/WeekSelector";
 import { GoalTimeline } from "@/components/partials/goalTracker/GoalTimeline";
 import { useGoalTracker } from "@/hooks/useGoalTracker";
+import { isAfter, isBefore } from "@/utils/dates";
 
 export const TrackerTab: React.FC<{ id: string }> = ({
     id,
@@ -21,9 +22,10 @@ export const TrackerTab: React.FC<{ id: string }> = ({
                     const placeholder = overloadDatesLeft.some(
                         (d) => d.toDateString() === date.toDateString()
                     ) ? targetOverloadProgress.toString() : goalTrackerState.expectedProgressPerDay.toString();
-                    const isDisabled = date < goalTrackerState.startDate || date > goalTrackerState.endDate;
+                    const isDisabled = isBefore(date, goalTrackerState.startDate) || isAfter(date, goalTrackerState.endDate);
+
                     return (
-                        <div key={date.toISOString()} className="input-wrapper side-by-side">
+                        <div key={`${date.toISOString()}-${goalTrackerState.startDate.toISOString()}-${goalTrackerState.endDate.toISOString()}`} className="input-wrapper side-by-side">
                             <span style={{ width: '150px', display: 'inline-block' }}>
                                 {date.toDateString()}
                             </span>

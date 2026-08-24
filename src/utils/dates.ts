@@ -70,3 +70,17 @@ export const DayOptions = Array.from({ length: 7 }, (_, idx) => {
     value: dayIdx,
   };
 });
+
+function normalizeDate(d: Date): number {
+  const date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
+export function isBefore(date1: Date, date2: Date): boolean {
+  return normalizeDate(date1) < normalizeDate(date2);
+}
+
+export function isAfter(date1: Date, date2: Date): boolean {
+  return normalizeDate(date1) > normalizeDate(date2);
+}

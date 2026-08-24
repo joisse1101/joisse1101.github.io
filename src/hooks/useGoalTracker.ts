@@ -85,7 +85,7 @@ export const useGoalTracker = (id: string) => {
     const STORAGE_KEYS = getStorageKeys(id);
     const [goalTrackerState, setGoalTrackerState] = useState<GoalTrackerState>(getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
         goalTitle: 'Your Goal',
-        startDate: new Date(2026, 7, 21),
+        startDate: new Date(Date.now()), // Default to today
         endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // Default to one week later
         expectedProgressPerDay: 5,
         goalTargets: [1, 5, 30, 100, 200, 300, 500, 750],
@@ -117,7 +117,7 @@ export const useGoalTracker = (id: string) => {
     }, [progressOnDates]);
 
 
-    const weeksInTracker = Math.ceil(getDaysBetween(goalTrackerState.startDate, goalTrackerState.endDate) / 7);
+    const weeksInTracker = Math.ceil((getDaysBetween(firstDayOfTracker, goalTrackerState.endDate) + 1) / 7);
     const datesInWeek = getDatesInRange(currWeekState.startDate, currWeekState.endDate);
     const daysInTracker = getDaysBetween(goalTrackerState.startDate, goalTrackerState.endDate) + 1;
 
@@ -251,6 +251,12 @@ export const useGoalTracker = (id: string) => {
             updateUnits(updates.units);
         }
     }
+
+    useEffect(() => {
+        if (currWeek > weeksInTracker) {
+            setCurrWeek(weeksInTracker);
+        }
+    }, [weeksInTracker])
 
     return { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, overloadDatesLeft, targetOverloadProgress, updateGoalTitle };
 };
