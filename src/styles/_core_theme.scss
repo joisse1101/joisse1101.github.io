@@ -249,3 +249,59 @@ section {
     flex-direction: column !important;
   }
 }
+
+// ==========================================================================
+// Gradient Overlays for Horizontal Scrollable Components
+// ==========================================================================
+.overlay-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  isolation: isolate; // Creates a new stacking context for the overlays
+
+  .overlay-left,
+  .overlay-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 35%;
+    /* Adjust width of the shadow area as needed */
+    pointer-events: none;
+    /* Allows user interactions/scroll through the overlay */
+    z-index: 2;
+    /* Keeps overlay on top of the scrolling list */
+    transition: all 0.3s ease-in-out;
+
+    &.hidden {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+  }
+
+  /* Independent side styles */
+  .overlay-left {
+    left: -2px;
+    transform-origin: left center;
+    background: linear-gradient(to right, $bg-surface, transparent);
+  }
+
+  .overlay-right {
+    right: -2px;
+    transform-origin: right center;
+    background: linear-gradient(to left, $bg-surface, transparent);
+  }
+
+  .overlay-component {
+    display: flex;
+    overflow-x: auto;
+    z-index: 1;
+    width: 100%;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

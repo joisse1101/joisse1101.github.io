@@ -1,3 +1,6 @@
+import { useCanSideScroll } from "@/hooks/useCanSideScroll";
+import { useRef } from "react";
+
 export type Option = {
     label: string;
     value: string | number;
@@ -10,20 +13,27 @@ interface ButtonSelectorProps extends Omit<React.HTMLAttributes<HTMLDivElement>,
 }
 
 export const ButtonSelector: React.FC<ButtonSelectorProps> = ({ label, options, selectedOptions, onSelect, ...props }) => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
+
     return (<div {...props}>
         <label className="label">{label}</label>
-        <div>
-            {options.map((option) => (
+        <div className="overlay-wrapper">
+            <div className={`overlay-left ${!canScrollLeft ? 'hidden' : ''}`} />
+            <div className={`overlay-right ${!canScrollRight ? 'hidden' : ''}`} />
+            <div className="overlay-component" ref={containerRef}>
+                {options.map((option) => (
 
-                <button
-                    key={option.value}
-                    onClick={() => onSelect(option.value)}
+                    <button
+                        key={option.value}
+                        onClick={() => onSelect(option.value)}
 
-                    className={`btn-option ${selectedOptions?.includes(option.value) ? 'selected' : ''}`}
-                >
-                    {option.label}
-                </button>
-            ))}
+                        className={`btn-option${selectedOptions?.includes(option.value) ? ' selected' : ''}`}
+                    >
+                        {option.label}
+                    </button>
+                ))}
+            </div>
         </div>
     </div>)
 }

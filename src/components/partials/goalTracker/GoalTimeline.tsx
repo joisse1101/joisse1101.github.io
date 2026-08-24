@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCanSideScroll } from '@/hooks/useCanSideScroll';
 import type { GoalState } from "@/hooks/useGoalTracker";
 import { ConfigureGoalModal } from "./ConfigureGoalModal";
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
@@ -6,45 +7,15 @@ import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (title: string, progressPerDay: number, start: Date, end: Date, targets: number[], overloadDays: number[]) => void }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
-
-    const checkScroll = () => {
-        const el = containerRef.current;
-        if (!el) return;
-
-        // 1px buffer handles fractional rounding issues on high-DPI screens
-        const isAtStart = el.scrollLeft <= 1;
-        const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-        const isOverflowing = el.scrollWidth > el.clientWidth;
-
-        setCanScrollLeft(isOverflowing && !isAtStart);
-        setCanScrollRight(isOverflowing && !isAtEnd);
-    };
-
-    useLayoutEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-
-        checkScroll();
-
-        // Attach event listener for active scroll position changes
-        el.addEventListener('scroll', checkScroll);
-        window.addEventListener('resize', checkScroll);
-
-        return () => {
-            el.removeEventListener('scroll', checkScroll);
-            window.removeEventListener('resize', checkScroll);
-        };
-    }, []);
+    const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
 
     return (
         <>
             <div className="card">
-                <div className='horizontal-tracker-wrapper'>
+                <div className='overlay-wrapper'>
                     <div className={`overlay-left ${!canScrollLeft ? 'hidden' : ''}`} />
                     <div className={`overlay-right ${!canScrollRight ? 'hidden' : ''}`} />
-                    <div className={`horizontal-tracker`} ref={containerRef}>
+                    <div className={`horizontal-tracker overlay-component`} ref={containerRef}>
                     {goals.map((goal, idx) => {
                         return (
                             <GoalComponent
