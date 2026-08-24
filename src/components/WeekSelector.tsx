@@ -1,3 +1,5 @@
+import { useMediaQuery } from "@/hooks/display";
+
 export type WeekState = {
     startDate: Date;
     endDate: Date;
@@ -21,12 +23,15 @@ export const WeekSelector = ({ weekState, incrementWeek }: WeekSelectorProps) =>
         incrementWeek(-1);
     };
 
+    const isPhone = !useMediaQuery(600); // Adjust the breakpoint as needed
+    const weekString = isPhone ? `Week ${week}\n${startDate.toDateString()} - ${endDate.toDateString()}` : `Week ${week}: ${startDate.toDateString()} - ${endDate.toDateString()}`;
+
     return (
         <div className="week-selector-wrapper">
             <button className="btn btn-invisible" onClick={onDecrWeek} disabled={isDecrementDisabled}>
                 〈
             </button>
-            <span>Week {week}: {startDate.toDateString()} - {endDate.toDateString()}</span>
+            <span>{weekString}</span>
             <button className="btn btn-invisible" onClick={onIncrWeek}>
                 〉
             </button>

@@ -3,4 +3,10 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
+
+    span {
+        width: 100%;
+        text-align: center;
+        white-space: pre-line;
+    }
 }
