@@ -92,7 +92,7 @@ function handleFileDownload(goalTrackerState: GoalTrackerState, currentWeek: num
         };
         downloadJson(downloadState, `${goalTrackerState.goalTitle.replace(/\s+/g, '_')}_goal_tracker.json`);
         showUploadDownloadToast('download', true);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Failed to download goal tracker data:', error);
         showUploadDownloadToast('download', false);
     }
