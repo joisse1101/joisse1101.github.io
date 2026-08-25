@@ -5,10 +5,12 @@ import Home from './pages/Home';
 import GrannySquare from './pages/projects/GrannySquare';
 // import About from './pages/About';
 import GoalTracker from './pages/projects/GoalTracker';
+import { Toaster } from 'sonner';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster />
       <Routes>
         {/* Parent route using the layout */}
         <Route path="/" element={<MainLayout />}>
