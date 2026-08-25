@@ -23,7 +23,9 @@ export const downloadJson = <T>(data: T, filename: string = 'data.json'): void =
  */
 export const uploadJson = <T>(file: File): Promise<T> => {
     return new Promise((resolve, reject) => {
-        if (file.type && file.type !== 'application/json' && !file.name.endsWith('.json')) {
+        const isJsonMime = file.type === 'application/json' || file.type === 'text/json';
+        const isJsonExt = file.name.toLowerCase().endsWith('.json');
+        if (!isJsonMime && !isJsonExt) {
             return reject(new Error('Invalid file type. Please upload a JSON file.'));
         }
 

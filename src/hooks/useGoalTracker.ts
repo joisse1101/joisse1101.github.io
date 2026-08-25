@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay } from "@/utils/dates";
+import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay, parseDate } from "@/utils/dates";
 import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
 import { downloadJson, uploadJson } from "@/utils/json";
@@ -64,7 +64,7 @@ export function getGoalTitleFromStorage(id: string): string {
     return 'Your Goal';
 }
 
-async function handleFileUpload(file: File,
+function handleFileUpload(file: File,
     updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void,
     setCurrWeek: (week: number) => void,
     setProgressOnDates: (progress: Record<string, string>) => void) {
@@ -106,15 +106,31 @@ const defaultGoalTrackerState: GoalTrackerState = {
 };
 
 function parseGoalStateFromJson(json: any): GoalTrackerState {
+    const isNumber = (val: any) => typeof val === 'number' && !isNaN(val);
+
     return {
-        goalTitle: String(json.goalTitle) ?? defaultGoalTrackerState.goalTitle,
-        startDate: new Date(json.startDate) ?? defaultGoalTrackerState.startDate,
-        endDate: new Date(json.endDate) ?? defaultGoalTrackerState.endDate,
-        expectedProgressPerDay: parseFloat(String(json.expectedProgressPerDay)) ?? defaultGoalTrackerState.expectedProgressPerDay,
-        goalTargets: Array.isArray(json.goalTargets) ? json.goalTargets.map(Number) : [],
-        overloadDays: Array.isArray(json.overloadDays) ? json.overloadDays.map(Number) : [],
-        firstDayOfWeek: parseInt(String(json.firstDayOfWeek), 10) ?? defaultGoalTrackerState.firstDayOfWeek,
-        units: String(json.units) ?? '',
+        goalTitle: json?.goalTitle != null ? String(json.goalTitle) : defaultGoalTrackerState.goalTitle,
+
+        startDate: parseDate(json?.startDate, defaultGoalTrackerState.startDate),
+        endDate: parseDate(json?.endDate, defaultGoalTrackerState.endDate),
+
+        expectedProgressPerDay: isNumber(Number(json?.expectedProgressPerDay))
+            ? Number(json.expectedProgressPerDay)
+            : defaultGoalTrackerState.expectedProgressPerDay,
+
+        goalTargets: Array.isArray(json?.goalTargets)
+            ? json.goalTargets.map(Number).filter((n: number) => !isNaN(n))
+            : defaultGoalTrackerState.goalTargets ?? [],
+
+        overloadDays: Array.isArray(json?.overloadDays)
+            ? json.overloadDays.map(Number).filter((n: number) => !isNaN(n))
+            : defaultGoalTrackerState.overloadDays ?? [],
+
+        firstDayOfWeek: isNumber(parseInt(json?.firstDayOfWeek, 10))
+            ? parseInt(json.firstDayOfWeek, 10)
+            : defaultGoalTrackerState.firstDayOfWeek,
+
+        units: json?.units != null ? String(json.units) : '',
     };
 }
 

@@ -7,8 +7,8 @@ import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 export const GoalTimeline: React.FC<{
     goals: GoalState[],
     goalTrackerState: GoalTrackerState,
-    updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void
-    onUpload: (file: File) => Promise<void>;
+    updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void;
+    onUpload: (file: File) => void;
     onDownload: () => void;
 }> = ({
     goals,
@@ -47,7 +47,7 @@ export const GoalTimeline: React.FC<{
 
 const GoalButtons: React.FC<{
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    onUpload: (file: File) => Promise<void>;
+    onUpload: (file: File) => void;
     onDownload: () => void;
 }> = ({ setIsModalOpen, onUpload, onDownload }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,15 +55,11 @@ const GoalButtons: React.FC<{
         fileInputRef.current?.click();
     };
 
-    const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        try {
-            onUpload(file);
-        } catch (error) {
-            console.error('Upload failed:', (error as Error).message);
-        }
+        onUpload(file)
     };
 
 
@@ -78,14 +74,14 @@ const GoalButtons: React.FC<{
                     style={{ display: 'none' }}
                 />
                 <button className="btn btn-ghost" onClick={handleUploadButtonClick}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M14 10v2.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5V10"></path>
                         <polyline points="11 5 8 2 5 5"></polyline>
                         <line x1="8" y1="2" x2="8" y2="10"></line>
                     </svg>
                 </button>
                 <button className="btn btn-ghost" onClick={onDownload}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M14 10v2.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5V10"></path>
                         <polyline points="5 7 8 10 11 7"></polyline>
                         <line x1="8" y1="10" x2="8" y2="2"></line>
