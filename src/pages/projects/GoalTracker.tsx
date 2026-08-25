@@ -31,7 +31,8 @@ export default function GoalTracker() {
         setActiveTab(newId);
     }
 
-    function triggerDeleteModal() {
+    function triggerDeleteModal(tabId: string) {
+        setActiveTab(tabId);
         setIsDeleteModalOpen(true);
     }
 
