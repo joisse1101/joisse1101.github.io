@@ -4,6 +4,7 @@ import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
 import { downloadJson, uploadJson } from "@/utils/json";
 import { showUploadDownloadToast } from "@/constants/toastConstants";
+import { toast } from "sonner";
 
 // --- Types ---
 
@@ -318,21 +319,27 @@ export const useGoalTracker = (id: string) => {
     }, [id]);
 
     const updateGoalTrackerState = useCallback((updates: Partial<GoalTrackerState>) => {
-        setGoalTrackerState((prev) => {
-            const nextState = { ...prev, ...updates };
-
-            if (updates.goalTargets) {
-                nextState.goalTargets = [...updates.goalTargets].sort((a, b) => a - b);
+        try { 
+            setGoalTrackerState((prev) => {
+                const nextState = { ...prev, ...updates };
+    
+                if (updates.goalTargets) {
+                    nextState.goalTargets = [...updates.goalTargets].sort((a, b) => a - b);
+                }
+                return nextState;
+            });
+    
+            if (updates.goalTitle !== undefined) {
+                window.dispatchEvent(
+                    new CustomEvent('goal_title_changed', {
+                        detail: { id, title: updates.goalTitle || 'Your Goal' },
+                    })
+                );
             }
-            return nextState;
-        });
-
-        if (updates.goalTitle !== undefined) {
-            window.dispatchEvent(
-                new CustomEvent('goal_title_changed', {
-                    detail: { id, title: updates.goalTitle || 'Your Goal' },
-                })
-            );
+            toast.success('Goal tracker configuration updated successfully.');
+        } catch (error) {
+            console.error('Failed to update goal tracker state:', error);
+            toast.error('Failed to configure goal tracker.');
         }
     }, [id]);
 
