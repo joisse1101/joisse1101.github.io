@@ -7,11 +7,11 @@ export const TrackerTab: React.FC<{ id: string }> = ({
     id,
 }) => {
 
-    const { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, overloadDatesLeft, targetOverloadProgress } = useGoalTracker(id);
+    const { currWeekState, incrementWeek, weeksInTracker, datesInWeek, goals, getProgressForDate, setProgressForDate, goalTrackerState, updateGoalTrackerState, overloadDatesLeft, targetOverloadProgress, onUpload, onDownload } = useGoalTracker(id);
 
     return (
         <div className="output-flex-wrapper stacked">
-            <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
+            <GoalTimeline goals={goals} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} onUpload={onUpload} onDownload={onDownload} />
             <WeekSelector
                 weekState={currWeekState}
                 incrementWeek={incrementWeek}

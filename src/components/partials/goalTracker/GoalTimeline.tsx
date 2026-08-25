@@ -4,10 +4,22 @@ import type { GoalState } from "@/hooks/useGoalTracker";
 import { ConfigureGoalModal } from "./ConfigureGoalModal";
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 
-export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }: { goals: GoalState[], goalTrackerState: GoalTrackerState, updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
+export const GoalTimeline: React.FC<{
+    goals: GoalState[],
+    goalTrackerState: GoalTrackerState,
+    updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void
+    onUpload: (file: File) => Promise<void>;
+    onDownload: () => void;
+}> = ({
+    goals,
+    goalTrackerState,
+    updateGoalTrackerState,
+    onUpload,
+    onDownload
+}) => {
+        const [isModalOpen, setIsModalOpen] = useState(false);
+        const containerRef = useRef<HTMLDivElement | null>(null);
+        const { canScrollLeft, canScrollRight } = useCanSideScroll(containerRef);
 
     return (
         <>
@@ -16,22 +28,74 @@ export const GoalTimeline = ({ goals, goalTrackerState, updateGoalTrackerState }
                     <div className={`overlay-left ${!canScrollLeft ? 'hidden' : ''}`} />
                     <div className={`overlay-right ${!canScrollRight ? 'hidden' : ''}`} />
                     <div className={`horizontal-tracker overlay-component`} ref={containerRef}>
-                    {goals.map((goal, idx) => {
-                        return (
-                            <GoalComponent
-                                key={idx}
-                                goal={goal}
-                            />
-                        );
-                    })}
+                        {goals.map((goal, idx) => {
+                            return (
+                                <GoalComponent
+                                    key={idx}
+                                    goal={goal}
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
+                    <GoalButtons setIsModalOpen={setIsModalOpen} onUpload={onUpload} onDownload={onDownload} />
                 </div>
-                <button onClick={() => setIsModalOpen(true)}>Configure Goal</button>
+                <ConfigureGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
+            </>
+        );
+    };
+
+const GoalButtons: React.FC<{
+    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    onUpload: (file: File) => Promise<void>;
+    onDownload: () => void;
+}> = ({ setIsModalOpen, onUpload, onDownload }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const handleUploadButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        try {
+            onUpload(file);
+        } catch (error) {
+            console.error('Upload failed:', (error as Error).message);
+        }
+    };
+
+
+    return (
+        <div className="btn-container">
+            <div className="btn-wrapper">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".json,application/json"
+                    onChange={onFileUpload}
+                    style={{ display: 'none' }}
+                />
+                <button className="btn btn-ghost" onClick={handleUploadButtonClick}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 10v2.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5V10"></path>
+                        <polyline points="11 5 8 2 5 5"></polyline>
+                        <line x1="8" y1="2" x2="8" y2="10"></line>
+                    </svg>
+                </button>
+                <button className="btn btn-ghost" onClick={onDownload}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 10v2.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5V10"></path>
+                        <polyline points="5 7 8 10 11 7"></polyline>
+                        <line x1="8" y1="10" x2="8" y2="2"></line>
+                    </svg>
+                </button>
             </div>
-            <ConfigureGoalModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} goalTrackerState={goalTrackerState} updateGoalTrackerState={updateGoalTrackerState} />
-        </>
-    );
-};
+            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>Configure Goal</button>
+        </div>
+    )
+}
 
 const GoalComponent: React.FC<{
     goal: GoalState

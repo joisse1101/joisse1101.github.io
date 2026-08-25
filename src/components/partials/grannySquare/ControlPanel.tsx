@@ -177,7 +177,7 @@ const DownloadAndUploadButtons: React.FC<{
 }> = ({ gridSize, maxInput, setActiveTab, setFilledCells }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const onUpload = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file || !gridSize) return;
 
@@ -216,7 +216,7 @@ const DownloadAndUploadButtons: React.FC<{
                 type="file"
                 ref={fileInputRef}
                 accept=".csv,text/csv,text/plain,application/csv,text/comma-separated-values"
-                onChange={handleFileUpload}
+                onChange={onUpload}
                 style={{ display: 'none' }}
             />
             <button className="btn btn-secondary" type="button" onClick={handleUploadButtonClick} title={UPLOAD_INPUT_TOOLTIP}>
