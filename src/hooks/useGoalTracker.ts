@@ -71,8 +71,9 @@ function handleFileUpload(file: File,
     const data = uploadJson<JsonState>(file);
     data.then((parsedData) => {
         updateGoalTrackerState(parseGoalStateFromJson(parsedData));
-        setCurrWeek(parsedData.currentWeek);
-        setProgressOnDates(parsedData.progressOnDates);
+        const nextWeek = Number(parsedData.currentWeek);
+        setCurrWeek(Number.isFinite(nextWeek) ? nextWeek : 1);
+        setProgressOnDates(parsedData.progressOnDates ?? {});
     }).catch((error) => {
         console.error('Upload failed:', (error as Error).message);
     });
