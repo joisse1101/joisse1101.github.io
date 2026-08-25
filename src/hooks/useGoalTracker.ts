@@ -3,6 +3,7 @@ import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay
 import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
 import { downloadJson, uploadJson } from "@/utils/json";
+import { showUploadDownloadToast } from "@/constants/toastConstants";
 
 // --- Types ---
 
@@ -74,18 +75,26 @@ function handleFileUpload(file: File,
         const nextWeek = Number(parsedData.currentWeek);
         setCurrWeek(Number.isFinite(nextWeek) ? nextWeek : 1);
         setProgressOnDates(parsedData.progressOnDates ?? {});
+        showUploadDownloadToast('upload', true);
     }).catch((error) => {
-        console.error('Upload failed:', (error as Error).message);
+        console.error('Failed to upload goal tracker data:', error);
+        showUploadDownloadToast('upload', false);
     });
 }
 
 function handleFileDownload(goalTrackerState: GoalTrackerState, currentWeek: number, progressOnDates: Record<string, string>) {
-    const downloadState: JsonState = {
-        ...goalTrackerState,
-        currentWeek,
-        progressOnDates,
-    };
-    downloadJson(downloadState, `${goalTrackerState.goalTitle.replace(/\s+/g, '_')}_goal_tracker.json`);
+    try {
+        const downloadState: JsonState = {
+            ...goalTrackerState,
+            currentWeek,
+            progressOnDates,
+        };
+        downloadJson(downloadState, `${goalTrackerState.goalTitle.replace(/\s+/g, '_')}_goal_tracker.json`);
+        showUploadDownloadToast('download', true);
+    } catch (error: unknown) {
+        console.error('Failed to download goal tracker data:', error);
+        showUploadDownloadToast('download', false);
+    }
 }
 
 export function deleteGoalStorage(id: string) {

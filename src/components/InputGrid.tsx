@@ -2,6 +2,7 @@ import React from 'react';
 import { downloadGridCSV } from '@utils/csv';
 import { useMediaQuery } from '@hooks/display';
 import { CLEAR_FILLED_CELLS_TOOLTIP, DOWNLOAD_INPUT_TOOLTIP, UNLOCK_CELLS_TOOLTIP, CLEAR_GRID_TOOLTIP } from '@/constants/grannySquareTooltips';
+import { showUploadDownloadToast } from '@/constants/toastConstants';
 
 export type CellColour = string | [string, string];
 
@@ -21,22 +22,34 @@ export interface InputGridProps {
 export const InputGrid: React.FC<InputGridProps> = ({ filledCells, gridSize, maxInput, lockedCells, handleClearGrid, handleFillCell, handleClearFilled, handleRemoveLocks }) => {
 
     const downloadGridAsCSV = () => {
+        // Guard against missing or zero dimensions
+        if (!gridSize || typeof gridSize !== 'number' || gridSize <= 0) {
+            console.error('Cannot download CSV: Invalid grid size.');
+            showUploadDownloadToast('download', false);
+            return;
+        }
+
         const filename = 'grid_data.csv';
+
+        // Construct raw 2D array of strings - downloadGridCSV will handle escaping & safety
         const csvData = Array.from({ length: gridSize }, (_, rowIdx) =>
             Array.from({ length: gridSize }, (_, colIdx) => {
                 const cellKey = `${rowIdx}-${colIdx}`;
-                if (!filledCells[cellKey]) {
-                    return '';
-                }
-                return filledCells[cellKey].toString();
+                return filledCells?.[cellKey] ?? '';
             })
         );
 
-        downloadGridCSV(csvData, filename);
+        try {
+            downloadGridCSV(csvData, filename);
+            showUploadDownloadToast('download', true);
+        } catch (error) {
+            console.error('Error downloading CSV:', error);
+            showUploadDownloadToast('download', false);
+        }
     };
 
     const isGridEmpty = Object.keys(filledCells).length === 0;
-    const isPhone = !useMediaQuery(600); // Use the custom hook to determine if the device is a phone
+    const isPhone = !useMediaQuery(600);
 
     return (
         <>

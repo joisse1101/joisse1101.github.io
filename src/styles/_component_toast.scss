@@ -1,0 +1,49 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// Sonner Toast Layout Mapping
+[data-sonner-toast] {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+
+  &[data-type="success"] {
+    background-color: $color-success-bg !important;
+    color: $color-success-text !important;
+    border: 1px solid color.mix($color-success-text, $color-success-bg, 18%) !important;
+
+    [data-icon] {
+      color: color.mix($color-success-text, $color-success, 30%);
+    }
+  }
+
+  &[data-type="warning"] {
+    background-color: $color-warning-bg !important;
+    color: $color-warning-text !important;
+    border: 1px solid color.mix($color-warning-text, $color-warning-bg, 18%) !important;
+
+    [data-icon] {
+      color: color.mix($color-warning-text, $color-warning, 30%);
+    }
+  }
+
+  &[data-type="error"] {
+    background-color: $color-danger-bg !important;
+    color: $color-danger-text !important;
+    border: 1px solid color.mix($color-danger-text, $color-danger-bg, 18%) !important;
+
+    [data-icon] {
+      color: color.mix($color-danger-text, $color-danger, 30%);
+    }
+  }
+
+  &[data-type="info"] {
+    background-color: $color-info-bg !important;
+    color: $color-info-text !important;
+    border: 1px solid color.mix($color-info-text, $color-info-bg, 18%) !important;
+
+    [data-icon] {
+      color: color.mix($color-info-text, $color-info, 30%);
+    }
+  }
+}

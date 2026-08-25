@@ -47,6 +47,18 @@ $color-info: #38bdf8; // Sky Blue
 $disabled-bg: #27272a; // Soft dark gray matching $border-subtle
 $disabled-text: $text-dim; // Tertiary text color
 
+$color-success-bg:   #e6f4ea;
+$color-success-text: #0d522c;
+
+$color-warning-bg:   #fef3c7;
+$color-warning-text: #78350f;
+
+$color-danger-bg:    #ffe4e6;
+$color-danger-text:  #881337;
+
+$color-info-bg:      #e0f2fe;
+$color-info-text:    #075985;
+
 // --- Borders & Dividers ---
 $border-subtle: #27272a; // Subtle separators
 $border-color: #3f3f46; // Input & container borders
@@ -70,7 +82,7 @@ $btn-size-sm-height: 2rem; // 32px
 $btn-size-md-height: 2.5rem; // 40px
 $btn-size-lg-height: 3rem; // 48px
 
-$btn-padding-icon: 0.375rem 0.5rem;
+$btn-padding-icon: 0.2rem;
 $btn-padding-sm: 0.375rem 0.75rem;
 $btn-padding-md: 0.625rem 1.25rem;
 $btn-padding-lg: 0.875rem 1.5rem;
@@ -212,6 +224,18 @@ $max-width: 1200px;
   --color-info: #{$color-info};
   --disabled-bg: #{$disabled-bg};
   --disabled-text: #{$disabled-text};
+
+  --color-success-bg: #{$color-success-bg};
+  --color-success-text: #{$color-success-text};
+
+  --color-warning-bg: #{$color-warning-bg};
+  --color-warning-text: #{$color-warning-text};
+
+  --color-danger-bg: #{$color-danger-bg};
+  --color-danger-text: #{$color-danger-text};
+
+  --color-info-bg: #{$color-info-bg};
+  --color-info-text: #{$color-info-text};
 
   /* Borders */
   --border-subtle: #{$border-subtle};

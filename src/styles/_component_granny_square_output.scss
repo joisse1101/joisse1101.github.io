@@ -6,14 +6,9 @@
 // Responsive Output Flex Layout (Side-by-side on wide, stacked on small)
 // ==========================================================================
 .output-flex-wrapper {
-  display: flex;
-  flex-direction: column; // Stacked on mobile/small screens
-  gap: $card-gap-md;
-  width: 100%;
-  align-items: flex-start;
-
-  @media (min-width: 1024px) {
-    flex-direction: row; // Side-by-side on desktop
+  #grid-container{
+    display: flex;
+    flex: 1;
   }
 }
 
@@ -45,7 +40,6 @@
 
 .grid-container-active,
 .table-container-active {
-  display: block;
   background-color: $bg-surface;
   border: 1px solid $border-subtle;
   border-radius: $radius-xl;
