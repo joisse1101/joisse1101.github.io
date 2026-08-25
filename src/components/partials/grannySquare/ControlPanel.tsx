@@ -230,6 +230,7 @@ const DownloadAndUploadButtons: React.FC<{
 
         reader.onerror = () => {
             console.error('FileReader error:', reader.error);
+            showUploadDownloadToast('upload', false);
             target.value = '';
         };
 
