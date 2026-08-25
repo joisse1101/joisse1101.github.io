@@ -89,7 +89,7 @@ const GoalButtons: React.FC<{
                     </svg>
                 </button>
             </div>
-            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>Configure Goal</button>
+            <button type="button" className="btn btn-primary" onClick={() => setIsModalOpen(true)}>Configure Goal</button>
         </div>
     )
 }
