@@ -29,14 +29,14 @@ export type GoalTrackerState = {
 const STORAGE_KEY_PREFIXES = {
     TRACKER_STATE: 'goal_tracker_state',
     PROGRESS_ON_DATES: 'goal_tracker_progress_on_dates',
-    CURRENT_WEEK_STATE: 'goal_tracker_current_week_state',
+    CURRENT_WEEK: 'goal_tracker_current_week',
 };
 
 function getStorageKeys(id: string) {
     return {
         TRACKER_STATE: `${STORAGE_KEY_PREFIXES.TRACKER_STATE}_${id}`,
         PROGRESS_ON_DATES: `${STORAGE_KEY_PREFIXES.PROGRESS_ON_DATES}_${id}`,
-        CURRENT_WEEK_STATE: `${STORAGE_KEY_PREFIXES.CURRENT_WEEK_STATE}_${id}`,
+        CURRENT_WEEK: `${STORAGE_KEY_PREFIXES.CURRENT_WEEK}_${id}`,
     };
 }
 
@@ -78,7 +78,7 @@ export function deleteGoalStorage(id: string) {
     const STORAGE_KEYS = getStorageKeys(id);
     localStorage.removeItem(STORAGE_KEYS.TRACKER_STATE);
     localStorage.removeItem(STORAGE_KEYS.PROGRESS_ON_DATES);
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_WEEK_STATE);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_WEEK);
 }
 
 export const useGoalTracker = (id: string) => {
@@ -94,7 +94,7 @@ export const useGoalTracker = (id: string) => {
         units: 'km',
     }));
     const [progressOnDates, setProgressOnDates] = useState<Record<string, string>>(getStorageItem(STORAGE_KEYS.PROGRESS_ON_DATES, {}));
-    const [currWeek, setCurrWeek] = useState<number>(1);
+    const [currWeek, setCurrWeek] = useState<number>(getStorageItem(STORAGE_KEYS.CURRENT_WEEK, 1));
 
     const firstDayOfTracker = getMostRecentFirstDay(goalTrackerState.startDate, goalTrackerState.firstDayOfWeek);
 
@@ -109,8 +109,8 @@ export const useGoalTracker = (id: string) => {
     }, [goalTrackerState]);
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEYS.CURRENT_WEEK_STATE, JSON.stringify(currWeekState));
-    }, [currWeekState]);
+        localStorage.setItem(STORAGE_KEYS.CURRENT_WEEK, JSON.stringify(currWeek));
+    }, [currWeek]);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEYS.PROGRESS_ON_DATES, JSON.stringify(progressOnDates));
@@ -255,6 +255,9 @@ export const useGoalTracker = (id: string) => {
     useEffect(() => {
         if (currWeek > weeksInTracker) {
             setCurrWeek(weeksInTracker);
+        }
+        if (currWeek < 1) {
+            setCurrWeek(1);
         }
     }, [weeksInTracker])
 
