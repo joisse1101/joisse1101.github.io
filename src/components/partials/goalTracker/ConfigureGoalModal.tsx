@@ -5,6 +5,7 @@ import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 import { ButtonSelector } from '@/components/ButtonSelector';
 import { DayOptions } from '@/utils/dates';
 import { RadioSelector } from '@/components/RadioSelector';
+import { toast } from 'sonner';
 
 interface ConfigureGoalModalProps {
     isOpen: boolean;
@@ -85,6 +86,7 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
         );
         onClose();
         setErrors([]);
+        toast.success('Goal tracker configuration updated successfully.');
     };
 
 

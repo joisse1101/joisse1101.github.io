@@ -319,27 +319,21 @@ export const useGoalTracker = (id: string) => {
     }, [id]);
 
     const updateGoalTrackerState = useCallback((updates: Partial<GoalTrackerState>) => {
-        try { 
-            setGoalTrackerState((prev) => {
-                const nextState = { ...prev, ...updates };
-    
-                if (updates.goalTargets) {
-                    nextState.goalTargets = [...updates.goalTargets].sort((a, b) => a - b);
-                }
-                return nextState;
-            });
-    
-            if (updates.goalTitle !== undefined) {
-                window.dispatchEvent(
-                    new CustomEvent('goal_title_changed', {
-                        detail: { id, title: updates.goalTitle || 'Your Goal' },
-                    })
-                );
+        setGoalTrackerState((prev) => {
+            const nextState = { ...prev, ...updates };
+
+            if (updates.goalTargets) {
+                nextState.goalTargets = [...updates.goalTargets].sort((a, b) => a - b);
             }
-            toast.success('Goal tracker configuration updated successfully.');
-        } catch (error) {
-            console.error('Failed to update goal tracker state:', error);
-            toast.error('Failed to configure goal tracker.');
+            return nextState;
+        });
+
+        if (updates.goalTitle !== undefined) {
+            window.dispatchEvent(
+                new CustomEvent('goal_title_changed', {
+                    detail: { id, title: updates.goalTitle || 'Your Goal' },
+                })
+            );
         }
     }, [id]);
 
