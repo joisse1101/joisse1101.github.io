@@ -27,9 +27,9 @@
       "@components/*": ["./src/components/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@utils/*": ["./src/utils/*"]
-      
+      "@utils/*": ["./src/utils/*"],
+      "@content/*": ["./src/content/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
 }

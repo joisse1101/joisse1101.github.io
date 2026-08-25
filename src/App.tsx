@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import GrannySquare from './pages/projects/GrannySquare';
 import GoalTracker from './pages/projects/GoalTracker';
 import { Toaster } from 'sonner';
+import Post from './pages/posts/Post';
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
           {/* <Route path="about" element={<About />} /> */}
           <Route path="/projects/granny-square" element={<GrannySquare />} />
           <Route path="/projects/goal-tracker" element={<GoalTracker />} />
+          <Route path="/posts" element={<div>post main page</div>} />
+          <Route path="/posts/:postId" element={<Post />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
