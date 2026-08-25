@@ -204,6 +204,7 @@ export const useGoalTracker = (id: string) => {
     // --- Goals State Computation ---
     const goals: GoalState[] = useMemo(() => {
         const goalTargets = goalTrackerState.goalTargets;
+        const expectedTotalProgress = goalTrackerState.expectedProgressPerDay * daysInTracker;
         const goalType = goalTargets.map((num) => num <= goalTrackerState.expectedProgressPerDay * daysInTracker ? 'normal' : 'stretch');
         const numNormalGoals = goalTargets.filter((num) => num <= goalTrackerState.expectedProgressPerDay * daysInTracker).length;
 
@@ -218,7 +219,7 @@ export const useGoalTracker = (id: string) => {
         return goalTargets.map((number, idx) => ({
             number,
             title: `${number} ${goalTrackerState.units}`,
-            subtitle: goalType[idx] === 'stretch' ? 'Stretch' : '',
+            subtitle: `${(number / expectedTotalProgress * 100).toFixed(0)}% of target`,
             color: goalColors[idx],
             state: activeGoalIdx === -1 ? 'COMPLETED' : idx === activeGoalIdx ? 'ACTIVE' : idx < activeGoalIdx ? 'COMPLETED' : 'PENDING',
             type: goalType[idx]
