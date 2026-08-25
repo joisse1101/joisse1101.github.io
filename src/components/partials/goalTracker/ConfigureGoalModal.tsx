@@ -1,6 +1,6 @@
 import { DateInput } from '@/components/DateInput';
 import { Modal } from '@/components/Modal';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
 import { ButtonSelector } from '@/components/ButtonSelector';
 import { DayOptions } from '@/utils/dates';
@@ -19,7 +19,6 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     goalTrackerState,
     updateGoalTrackerState
 }) => {
-    const dialogRef = useRef<HTMLDialogElement | null>(null);
     const [goalTitle, setGoalTitle] = useState<string>(goalTrackerState.goalTitle ?? '');
     const [startDate, setStartDate] = useState<string>(goalTrackerState.startDate.toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState<string>(goalTrackerState.endDate.toISOString().split('T')[0]);
@@ -30,17 +29,6 @@ export const ConfigureGoalModal: React.FC<ConfigureGoalModalProps> = ({
     const [units, setUnits] = useState<string>(goalTrackerState.units);
 
     const [errors, setErrors] = useState<string[]>([]);
-
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        if (isOpen) {
-            if (!dialog.open) dialog.showModal();
-        } else {
-            if (dialog.open) dialog.close();
-        }
-    }, [isOpen]);
 
     const handleDaySelect = (value: string | number) => {
         setSelectedOverloadDays((prev) => {

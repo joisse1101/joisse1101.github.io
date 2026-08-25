@@ -1,5 +1,5 @@
 import { Modal } from '@/components/Modal';
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 
 interface DeleteModalProps {
     isOpen: boolean;
@@ -12,20 +12,6 @@ export const DeleteGoalModal: React.FC<DeleteModalProps> = ({
     onClose,
     onDelete
 }) => {
-    const dialogRef = useRef<HTMLDialogElement | null>(null);
-
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        if (isOpen) {
-            if (!dialog.open) dialog.showModal();
-        } else {
-            if (dialog.open) dialog.close();
-        }
-    }, [isOpen]);
-
-
     return (
         <Modal
             isOpen={isOpen}
