@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './styles/main.scss';
+import 'sonner/dist/styles.css'; // <-- Add this import
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';

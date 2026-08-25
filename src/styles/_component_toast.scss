@@ -1,8 +1,15 @@
 @use 'sass:color';
 @use 'variables' as *;
 
-// Sonner Toast Layout Mapping
+[aria-label^="Notifications"],
+[data-sonner-toaster] {
+  position: fixed !important;
+  pointer-events: none;
+  z-index: 9999;
+}
+
 [data-sonner-toast] {
+  pointer-events: auto;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   font-weight: 500;
