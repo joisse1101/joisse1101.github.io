@@ -1,24 +1,5 @@
+@use 'sass:color';
 @use 'variables' as *;
-
-// --- Feedback / State Base Accents ---
-$color-stretch: #06b6d4; 
-$color-success: #34d399; 
-$color-warning: #fbbf24; 
-$color-danger:  #f87171; 
-$color-info:    #38bdf8; 
-
-// --- Refined Light Theme Toast Pairs ---
-$color-success-bg:   #e6f4ea;
-$color-success-text: #0d522c;
-
-$color-warning-bg:   #fef3c7;
-$color-warning-text: #78350f;
-
-$color-danger-bg:    #ffe4e6;
-$color-danger-text:  #881337;
-
-$color-info-bg:      #e0f2fe;
-$color-info-text:    #075985;
 
 // Sonner Toast Layout Mapping
 [data-sonner-toast] {
@@ -29,40 +10,40 @@ $color-info-text:    #075985;
   &[data-type="success"] {
     background-color: $color-success-bg !important;
     color: $color-success-text !important;
-    border: 1px solid mix($color-success-text, $color-success-bg, 18%) !important;
+    border: 1px solid color.mix($color-success-text, $color-success-bg, 18%) !important;
 
     [data-icon] {
-      color: mix($color-success-text, $color-success, 30%);
+      color: color.mix($color-success-text, $color-success, 30%);
     }
   }
 
   &[data-type="warning"] {
     background-color: $color-warning-bg !important;
     color: $color-warning-text !important;
-    border: 1px solid mix($color-warning-text, $color-warning-bg, 18%) !important;
+    border: 1px solid color.mix($color-warning-text, $color-warning-bg, 18%) !important;
 
     [data-icon] {
-      color: mix($color-warning-text, $color-warning, 30%);
+      color: color.mix($color-warning-text, $color-warning, 30%);
     }
   }
 
   &[data-type="error"] {
     background-color: $color-danger-bg !important;
     color: $color-danger-text !important;
-    border: 1px solid mix($color-danger-text, $color-danger-bg, 18%) !important;
+    border: 1px solid color.mix($color-danger-text, $color-danger-bg, 18%) !important;
 
     [data-icon] {
-      color: mix($color-danger-text, $color-danger, 30%);
+      color: color.mix($color-danger-text, $color-danger, 30%);
     }
   }
 
   &[data-type="info"] {
     background-color: $color-info-bg !important;
     color: $color-info-text !important;
-    border: 1px solid mix($color-info-text, $color-info-bg, 18%) !important;
+    border: 1px solid color.mix($color-info-text, $color-info-bg, 18%) !important;
 
     [data-icon] {
-      color: mix($color-info-text, $color-info, 30%);
+      color: color.mix($color-info-text, $color-info, 30%);
     }
   }
 }

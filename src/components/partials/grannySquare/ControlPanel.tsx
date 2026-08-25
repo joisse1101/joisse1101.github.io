@@ -1,5 +1,6 @@
 import ColorPalettePicker from "@/components/ColourPalettePicker";
 import { UPLOAD_INPUT_TOOLTIP } from "@/constants/grannySquareTooltips";
+import { showUploadDownloadToast } from "@/constants/toastConstants";
 import { useMediaQuery } from "@/hooks/display";
 import type { GrannyGridState } from "@/hooks/useGrannySquare";
 import { parseGridCSV } from "@/utils/csv";
@@ -178,32 +179,61 @@ const DownloadAndUploadButtons: React.FC<{
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const onUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file || !gridSize) return;
+        const target = event.target;
+        const file = target.files?.[0];
+
+        // Defensive check for missing file, grid dimensions, or clamping limit
+        if (!file || !gridSize || typeof maxInput !== 'number') return;
 
         const reader = new FileReader();
+
         reader.onload = (e) => {
-            const content = e.target?.result as string;
-            if (content) {
+            try {
+                const content = e.target?.result as string;
+                if (!content) return;
+
                 const parsedData = parseGridCSV(content, gridSize);
+                if (!Array.isArray(parsedData)) {
+                    throw new Error('Parsed data is not a valid 2D grid structure.');
+                }
+
                 const newFilledCells: Record<string, string> = {};
-                parsedData.forEach((row, rowIdx) =>
+
+                parsedData.forEach((row, rowIdx) => {
+                    if (!Array.isArray(row)) return;
+
                     row.forEach((cell, colIdx) => {
-                        const cellKey = `${rowIdx}-${colIdx}`;
-                        const cellValue = parseInt(cell, 10);
-                        if (!isNaN(cellValue)) {
+                        const trimmed = cell?.toString().trim();
+                        if (!trimmed) return;
+
+                        const cellValue = parseInt(trimmed, 10);
+
+                        if (!Number.isNaN(cellValue)) {
+                            // Clamp value strictly between 1 and maxInput
                             const clampedValue = Math.min(Math.max(cellValue, 1), maxInput);
+                            const cellKey = `${rowIdx}-${colIdx}`;
                             newFilledCells[cellKey] = clampedValue.toString();
                         }
-                    })
-                );
+                    });
+                });
+
                 setFilledCells(newFilledCells);
                 setActiveTab('patterns-tab');
+                showUploadDownloadToast('upload', true);
+            } catch (err) {
+                console.error('Failed to parse uploaded grid file:', err);
+                showUploadDownloadToast('upload', false);
+            } finally {
+                target.value = '';
             }
         };
 
+        reader.onerror = () => {
+            console.error('FileReader error:', reader.error);
+            target.value = '';
+        };
+
         reader.readAsText(file);
-        event.target.value = '';
     };
 
     const handleUploadButtonClick = () => {
