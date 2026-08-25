@@ -59,7 +59,8 @@ const GoalButtons: React.FC<{
         const file = event.target.files?.[0];
         if (!file) return;
 
-        onUpload(file)
+        onUpload(file);
+        event.target.value = '';
     };
 
 
