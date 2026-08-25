@@ -94,8 +94,10 @@ $btn-secondary-hover-border: $border-color;
 // Ghost / Subtle Variant
 $btn-ghost-bg: transparent;
 $btn-ghost-text: $text-muted;
+$btn-ghost-border: rgba($border-subtle, 0.5);
 $btn-ghost-hover-bg: rgba($bg-surface-hover, 0.6);
 $btn-ghost-hover-text: $text-main;
+$btn-ghost-hover-border: $border-subtle;
 
 // Danger Variants
 $btn-danger-bg: rgba($color-danger, 0.12);

@@ -82,10 +82,12 @@ button,
   &-ghost {
     background-color: $btn-ghost-bg;
     color: $btn-ghost-text;
+    border-color: $btn-ghost-border;
 
     &:hover:not(:disabled):not(.is-disabled) {
       background-color: $btn-ghost-hover-bg;
       color: $btn-ghost-hover-text;
+      border-color: $btn-ghost-hover-border;
     }
   }
 

@@ -84,3 +84,9 @@ export function isBefore(date1: Date, date2: Date): boolean {
 export function isAfter(date1: Date, date2: Date): boolean {
   return normalizeDate(date1) > normalizeDate(date2);
 }
+
+export function parseDate(val: any, fallback: Date): Date {
+  if (val === null || val === undefined) return fallback;
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? fallback : d;
+}

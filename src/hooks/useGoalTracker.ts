@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay } from "@/utils/dates";
+import { getDatesInRange, getDaysBetween, getLocalDateKey, getMostRecentFirstDay, parseDate } from "@/utils/dates";
 import { getStatusColor, interpolateColors } from "@/utils/colours";
 import { getStorageItem } from "@/utils/storage";
+import { downloadJson, uploadJson } from "@/utils/json";
 
 // --- Types ---
 
@@ -26,6 +27,11 @@ export type GoalTrackerState = {
     overloadDays: number[];
     firstDayOfWeek: number;
     units: string;
+};
+
+type JsonState = GoalTrackerState & {
+    currentWeek: number;
+    progressOnDates: Record<string, string>;
 };
 
 // --- Storage Utilities ---
@@ -58,6 +64,30 @@ export function getGoalTitleFromStorage(id: string): string {
     return 'Your Goal';
 }
 
+function handleFileUpload(file: File,
+    updateGoalTrackerState: (updates: Partial<GoalTrackerState>) => void,
+    setCurrWeek: (week: number) => void,
+    setProgressOnDates: (progress: Record<string, string>) => void) {
+    const data = uploadJson<JsonState>(file);
+    data.then((parsedData) => {
+        updateGoalTrackerState(parseGoalStateFromJson(parsedData));
+        const nextWeek = Number(parsedData.currentWeek);
+        setCurrWeek(Number.isFinite(nextWeek) ? nextWeek : 1);
+        setProgressOnDates(parsedData.progressOnDates ?? {});
+    }).catch((error) => {
+        console.error('Upload failed:', (error as Error).message);
+    });
+}
+
+function handleFileDownload(goalTrackerState: GoalTrackerState, currentWeek: number, progressOnDates: Record<string, string>) {
+    const downloadState: JsonState = {
+        ...goalTrackerState,
+        currentWeek,
+        progressOnDates,
+    };
+    downloadJson(downloadState, `${goalTrackerState.goalTitle.replace(/\s+/g, '_')}_goal_tracker.json`);
+}
+
 export function deleteGoalStorage(id: string) {
     const STORAGE_KEYS = getStorageKeys(id);
     localStorage.removeItem(STORAGE_KEYS.TRACKER_STATE);
@@ -65,31 +95,51 @@ export function deleteGoalStorage(id: string) {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_WEEK);
 }
 
-function retrieveGoalTrackerState(id: string): GoalTrackerState {
-    const STORAGE_KEYS = getStorageKeys(id);
-    const now = Date.now();
+const defaultGoalTrackerState: GoalTrackerState = {
+    goalTitle: 'Your Goal',
+    startDate: new Date(Date.now()),
+    endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
+    expectedProgressPerDay: 5,
+    goalTargets: [1, 5, 30, 100, 200, 300, 500, 750],
+    overloadDays: [0, 6],
+    firstDayOfWeek: 0,
+    units: 'km',
+};
 
-    const storedState = getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
-        goalTitle: 'Your Goal',
-        startDate: new Date(now),
-        endDate: new Date(now + 6 * 24 * 60 * 60 * 1000),
-        expectedProgressPerDay: 5,
-        goalTargets: [1, 5, 30, 100, 200, 300, 500, 750],
-        overloadDays: [0, 6],
-        firstDayOfWeek: 0,
-        units: 'km',
-    });
+function parseGoalStateFromJson(json: any): GoalTrackerState {
+    const isNumber = (val: any) => typeof val === 'number' && !isNaN(val);
 
     return {
-        goalTitle: String(storedState.goalTitle),
-        startDate: new Date(storedState.startDate),
-        endDate: new Date(storedState.endDate),
-        expectedProgressPerDay: parseFloat(String(storedState.expectedProgressPerDay)),
-        goalTargets: Array.isArray(storedState.goalTargets) ? storedState.goalTargets.map(Number) : [],
-        overloadDays: Array.isArray(storedState.overloadDays) ? storedState.overloadDays.map(Number) : [],
-        firstDayOfWeek: parseInt(String(storedState.firstDayOfWeek), 10),
-        units: String(storedState.units),
+        goalTitle: json?.goalTitle != null ? String(json.goalTitle) : defaultGoalTrackerState.goalTitle,
+
+        startDate: parseDate(json?.startDate, defaultGoalTrackerState.startDate),
+        endDate: parseDate(json?.endDate, defaultGoalTrackerState.endDate),
+
+        expectedProgressPerDay: isNumber(Number(json?.expectedProgressPerDay))
+            ? Number(json.expectedProgressPerDay)
+            : defaultGoalTrackerState.expectedProgressPerDay,
+
+        goalTargets: Array.isArray(json?.goalTargets)
+            ? json.goalTargets.map(Number).filter((n: number) => !isNaN(n))
+            : defaultGoalTrackerState.goalTargets ?? [],
+
+        overloadDays: Array.isArray(json?.overloadDays)
+            ? json.overloadDays.map(Number).filter((n: number) => !isNaN(n))
+            : defaultGoalTrackerState.overloadDays ?? [],
+
+        firstDayOfWeek: isNumber(parseInt(json?.firstDayOfWeek, 10))
+            ? parseInt(json.firstDayOfWeek, 10)
+            : defaultGoalTrackerState.firstDayOfWeek,
+
+        units: json?.units != null ? String(json.units) : '',
     };
+}
+
+function retrieveGoalTrackerState(id: string): GoalTrackerState {
+    const STORAGE_KEYS = getStorageKeys(id);
+    const storedState = getStorageItem(STORAGE_KEYS.TRACKER_STATE, defaultGoalTrackerState);
+
+    return parseGoalStateFromJson(storedState);
 }
 
 // --- Hooks ---
@@ -277,6 +327,10 @@ export const useGoalTracker = (id: string) => {
         }
     }, [id]);
 
+    // -- Upload and Download Functions ---
+    const onUpload = (file: File) => handleFileUpload(file, updateGoalTrackerState, setCurrWeek, setProgressOnDates);
+    const onDownload = () => handleFileDownload(goalTrackerState, currWeek, progressOnDates);
+
     return {
         currWeekState,
         incrementWeek,
@@ -290,5 +344,7 @@ export const useGoalTracker = (id: string) => {
         overloadDatesLeft,
         targetOverloadProgress,
         updateGoalTitle,
+        onUpload: onUpload,
+        onDownload: onDownload
     };
 };
