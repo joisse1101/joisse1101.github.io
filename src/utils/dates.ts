@@ -86,7 +86,7 @@ export function isAfter(date1: Date, date2: Date): boolean {
 }
 
 export function parseDate(val: any, fallback: Date): Date {
-    if (!val) return fallback;
-    const d = new Date(val);
-    return isNaN(d.getTime()) ? fallback : d;
+  if (val === null || val === undefined) return fallback;
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? fallback : d;
 }
