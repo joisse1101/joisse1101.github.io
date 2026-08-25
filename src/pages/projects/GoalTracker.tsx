@@ -4,6 +4,7 @@ import { TrackerTab } from "@/components/partials/goalTracker/TrackerTab";
 import { getStorageItem } from "@/utils/storage";
 import { useGoalTitle, deleteGoalStorage } from "@/hooks/useGoalTracker";
 import { generateUUID } from '@/utils/numbers';
+import { DeleteGoalModal } from "@/components/partials/goalTracker/DeleteGoalModal";
 
 const STORAGE_KEY = 'goal_tracker_tab_ids';
 
@@ -11,6 +12,7 @@ export default function GoalTracker() {
     const [tabIds, setTabIds] = useState<string[]>(() =>
         getStorageItem(STORAGE_KEY, [generateUUID()]));
     const [activeTab, setActiveTab] = useState<string>(tabIds[0]);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tabIds));
@@ -29,6 +31,10 @@ export default function GoalTracker() {
         setActiveTab(newId);
     }
 
+    function triggerDeleteModal() {
+        setIsDeleteModalOpen(true);
+    }
+
     function handleDeleteTab(tabId: string) {
         if (tabIds.length === 1) {
             alert("You cannot delete the last remaining tab.");
@@ -36,7 +42,7 @@ export default function GoalTracker() {
         }
         setTabIds(tabIds.filter(id => id !== tabId));
         if (activeTab === tabId) {
-            setActiveTab(tabIds[0]);
+            setActiveTab(tabIds.filter(id => id !== tabId)[0]);
         }
         deleteGoalStorage(tabId);
     }
@@ -47,7 +53,15 @@ export default function GoalTracker() {
                 activeId={activeTab}
                 onTabChange={(tabId) => setActiveTab(tabId)}
                 onTabAdd={handleAddTab}
-                onTabDelete={tabIds.length > 1 ? handleDeleteTab : undefined}
+                onTabDelete={tabIds.length > 1 ? triggerDeleteModal : undefined}
+            />
+            <DeleteGoalModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onDelete={() => {
+                    handleDeleteTab(activeTab);
+                    setIsDeleteModalOpen(false);
+                }}
             />
         </div>
     )

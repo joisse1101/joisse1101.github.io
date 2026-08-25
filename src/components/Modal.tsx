@@ -1,11 +1,20 @@
 import React, { useRef, useEffect } from 'react';
 
+export type ModalType = 'form' | 'destructive';
+
+export type ButtonText = {
+    primary: string;
+    secondary: string;
+}
+
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: () => void;
     title?: string;
     children?: React.ReactNode;
+    modalType?: ModalType;
+    buttonText?: ButtonText;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,6 +23,8 @@ export const Modal: React.FC<ModalProps> = ({
     title = '',
     children,
     onSubmit,
+    modalType = 'form',
+    buttonText = { primary: 'Save Changes', secondary: 'Cancel' }
 }) => {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
@@ -32,6 +43,8 @@ export const Modal: React.FC<ModalProps> = ({
     const handleCancel = (e: React.SyntheticEvent<HTMLDialogElement, Event>) => {
         e.preventDefault();
     };
+
+    const primaryButtonClass = modalType === 'destructive' ? 'btn btn-danger' : 'btn btn-primary';
 
     return (
         <dialog
@@ -67,16 +80,16 @@ export const Modal: React.FC<ModalProps> = ({
                         className="btn btn-secondary"
                         onClick={onClose}
                     >
-                        Cancel
+                        {buttonText.secondary}
                     </button>
                     <button
                         type="button"
-                        className="btn btn-primary"
+                        className={primaryButtonClass}
                         onClick={() => {
                             onSubmit();
                         }}
                     >
-                        Save Changes
+                        {buttonText.primary}
                     </button>
                 </footer>
             </div>
