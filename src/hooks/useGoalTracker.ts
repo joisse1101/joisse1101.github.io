@@ -81,9 +81,9 @@ export function deleteGoalStorage(id: string) {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_WEEK);
 }
 
-export const useGoalTracker = (id: string) => {
+function retrieveGoalTrackerState(id: string): GoalTrackerState {
     const STORAGE_KEYS = getStorageKeys(id);
-    const [goalTrackerState, setGoalTrackerState] = useState<GoalTrackerState>(getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
+    const storedState = getStorageItem(STORAGE_KEYS.TRACKER_STATE, {
         goalTitle: 'Your Goal',
         startDate: new Date(Date.now()), // Default to today
         endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // Default to one week later
@@ -92,7 +92,23 @@ export const useGoalTracker = (id: string) => {
         overloadDays: [0, 6], // Default to Sunday and Saturday
         firstDayOfWeek: 0, // Default to Sunday
         units: 'km',
-    }));
+    })
+
+    return {
+        goalTitle: storedState.goalTitle.toString(),
+        startDate: new Date(storedState.startDate),
+        endDate: new Date(storedState.endDate),
+        expectedProgressPerDay: parseFloat(storedState.expectedProgressPerDay.toString()),
+        goalTargets: Array.isArray(storedState.goalTargets) ? storedState.goalTargets.map(Number) : [],
+        overloadDays: Array.isArray(storedState.overloadDays) ? storedState.overloadDays.map(Number) : [],
+        firstDayOfWeek: parseInt(storedState.firstDayOfWeek.toString(), 10),
+        units: storedState.units.toString(),
+    };
+}
+
+export const useGoalTracker = (id: string) => {
+    const STORAGE_KEYS = getStorageKeys(id);
+    const [goalTrackerState, setGoalTrackerState] = useState<GoalTrackerState>(retrieveGoalTrackerState(id));
     const [progressOnDates, setProgressOnDates] = useState<Record<string, string>>(getStorageItem(STORAGE_KEYS.PROGRESS_ON_DATES, {}));
     const [currWeek, setCurrWeek] = useState<number>(getStorageItem(STORAGE_KEYS.CURRENT_WEEK, 1));
 
@@ -132,7 +148,14 @@ export const useGoalTracker = (id: string) => {
 
     const goalTargets: number[] = goalTrackerState.goalTargets;
 
-    const currentProgress = Object.entries(progressOnDates).reduce((sum, [date, progress]) => dateIsTracked(date) ? sum + (parseFloat(progress) || 0) : sum, 0);
+    const startDateKeyKey = getLocalDateKey(goalTrackerState.startDate);
+    const endDateKey = getLocalDateKey(goalTrackerState.endDate);
+
+    const currentProgress = Object.entries(progressOnDates).reduce((sum, [dateKey, progress]) => {
+        const isTracked = dateKey >= startDateKeyKey && dateKey <= endDateKey;
+        return isTracked ? sum + (parseFloat(progress) || 0) : sum;
+    }, 0);
+
     const progressLeft = goalTargets[goalTargets.length - 1] - currentProgress;
     const overloadTarget = (progressLeft - nonOverloadDatesLeft.length * goalTrackerState.expectedProgressPerDay) / overloadDatesLeft.length;
     const targetOverloadProgress =
@@ -156,11 +179,6 @@ export const useGoalTracker = (id: string) => {
         state: activeGoalIdx == -1 ? 'COMPLETED' : idx == activeGoalIdx ? 'ACTIVE' : idx < activeGoalIdx ? 'COMPLETED' : 'PENDING',
         type: goalType[idx]
     }));
-
-    function dateIsTracked(dateKey: string): boolean {
-        const date = new Date(dateKey);
-        return date >= goalTrackerState.startDate && date <= goalTrackerState.endDate;
-    }
 
     function incrementWeek(increment: number) {
         setCurrWeek((prevWeek) => {
