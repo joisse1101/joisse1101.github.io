@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev:link": "yalc link @joisse1101/ui-library && vite",
-    "dev:unlink": "yalc retreat @joisse1101/ui-library && npm install && vite",
     "dev": "vite",
+    "dev:link": "yalc link @joisse1101/ui-library && npm run dev",
     "build": "tsc -b && vite build",
+    "build:unlink": "yalc retreat @joisse1101/ui-library && npm install && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
