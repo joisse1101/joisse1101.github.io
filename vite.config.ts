@@ -16,6 +16,9 @@ export default defineConfig({
     },
     react(),
   ],
+  optimizeDeps: {
+    exclude: ['@joisse1101/ui-library']
+  },
   base: '/',
   resolve: {
     tsconfigPaths: true,

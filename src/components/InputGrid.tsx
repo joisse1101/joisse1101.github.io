@@ -1,6 +1,6 @@
 import React from 'react';
 import { downloadGridCSV } from '@utils/csv';
-import { useMediaQuery } from '@hooks/display';
+import { useMediaQuery } from '@joisse1101/ui-library';
 import { CLEAR_FILLED_CELLS_TOOLTIP, DOWNLOAD_INPUT_TOOLTIP, UNLOCK_CELLS_TOOLTIP, CLEAR_GRID_TOOLTIP } from '@/constants/grannySquareTooltips';
 import { showUploadDownloadToast } from '@/constants/toastConstants';
 

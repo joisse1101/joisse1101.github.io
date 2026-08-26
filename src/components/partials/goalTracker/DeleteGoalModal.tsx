@@ -1,4 +1,4 @@
-import { Modal } from '@/components/Modal';
+import { Modal } from '@joisse1101/ui-library';
 import React from 'react';
 
 interface DeleteModalProps {

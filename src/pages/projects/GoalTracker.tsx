@@ -1,4 +1,4 @@
-import Tabs, { type TabItem } from "@/components/Tabs";
+import { Tabs, type TabItem } from "@joisse1101/ui-library";
 import { useEffect, useState } from "react";
 import { TrackerTab } from "@/components/partials/goalTracker/TrackerTab";
 import { getStorageItem } from "@/utils/storage";

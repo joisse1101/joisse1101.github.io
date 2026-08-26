@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useCanSideScroll } from '@/hooks/useCanSideScroll';
+import { useCanSideScroll } from '@joisse1101/ui-library';
 import type { GoalState } from "@/hooks/useGoalTracker";
 import { ConfigureGoalModal } from "./ConfigureGoalModal";
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Tabs, type TabItem } from '@components/Tabs';
+import { Tabs, type TabItem } from '@joisse1101/ui-library';
 import { GrannyGrid } from '@/components/partials/grannySquare/GrannyGrid';
 import { PaletteDisplay } from '@/components/partials/grannySquare/PaletteDisplay';
 import { ControlPanel } from '@/components/partials/grannySquare/ControlPanel';
 import { InputGrid } from '@/components/InputGrid';
 import { useGrannySquare } from '@/hooks/useGrannySquare';
-import { useMediaQuery } from '@/hooks/display';
+import { useMediaQuery } from '@joisse1101/ui-library';
 
 // Extend Window so TypeScript doesn't throw errors
 declare global {
