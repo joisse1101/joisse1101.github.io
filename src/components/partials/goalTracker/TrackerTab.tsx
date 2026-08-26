@@ -1,4 +1,4 @@
-import { WeekSelector } from "@/components/WeekSelector";
+import { WeekSelector } from "@joisse1101/ui-library";
 import { GoalTimeline } from "@/components/partials/goalTracker/GoalTimeline";
 import { useGoalTracker } from "@/hooks/useGoalTracker";
 import { isAfter, isBefore } from "@/utils/dates";

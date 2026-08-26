@@ -1,10 +1,9 @@
-import { DateInput } from '@/components/DateInput';
-import { Modal } from '@/components/Modal';
+import { ButtonSelector, DateInput } from '@joisse1101/ui-library';
+import { Modal } from '@joisse1101/ui-library';
 import React, { useState } from 'react';
 import type { GoalTrackerState } from '@/hooks/useGoalTracker';
-import { ButtonSelector } from '@/components/ButtonSelector';
 import { DayOptions } from '@/utils/dates';
-import { RadioSelector } from '@/components/RadioSelector';
+import { RadioSelector } from '@joisse1101/ui-library';
 import { toast } from 'sonner';
 
 interface ConfigureGoalModalProps {

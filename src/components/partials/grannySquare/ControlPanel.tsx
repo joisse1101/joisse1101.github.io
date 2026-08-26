@@ -1,7 +1,7 @@
-import ColorPalettePicker from "@/components/ColourPalettePicker";
+import { ColourPalettePicker } from "@joisse1101/ui-library";
 import { UPLOAD_INPUT_TOOLTIP } from "@/constants/grannySquareTooltips";
 import { showUploadDownloadToast } from "@/constants/toastConstants";
-import { useMediaQuery } from "@/hooks/display";
+import { useMediaQuery } from "@joisse1101/ui-library";
 import type { GrannyGridState } from "@/hooks/useGrannySquare";
 import { parseGridCSV } from "@/utils/csv";
 import { useRef, useState, type ChangeEvent } from "react";
@@ -137,7 +137,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 </div>
                 <details id="colour-picker-details" className={`color-picker-accordion ${isLoading ? 'disabled' : ''}`}>
                     <summary className={`accordion-header ${isLoading ? 'disabled' : ''}`}>Colour Settings / Palette</summary>
-                    <ColorPalettePicker onChange={(newPalette: string[]) => setColors(newPalette)} />
+                    <ColourPalettePicker onChange={(newPalette: string[]) => setColors(newPalette)} />
                 </details>
                 {errors.length > 0 && (
                     <div className="error-messages">
