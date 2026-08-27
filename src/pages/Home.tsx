@@ -1,5 +1,6 @@
 import { CardCarousel } from "@joisse1101/ui-library";
 import "@/styles/page_home.scss";
+import { Link } from "react-router";
 
 const postPaths = Object.keys(import.meta.glob('@/content/posts/*.mdx', { eager: false }));
 const notePaths = Object.keys(import.meta.glob('@/content/notes/*.mdx', { eager: false }));
@@ -48,13 +49,13 @@ export default function Home() {
                 <div className="link-container">
                     <h3>Posts</h3>
                     {getNames(postPaths).map(postName => (
-                        <a href={`/posts/${postName}`} key={postName}>{postName}</a>
+                        <Link to={`/posts/${postName}`} key={postName}>{postName}</Link>
                     ))}
                 </div>
                 <div className="link-container">
                     <h3>Notes</h3>
                     {getNames(notePaths).map(noteName => (
-                        <a href={`/notes/${noteName}`} key={noteName}>{noteName}</a>
+                        <Link to={`/notes/${noteName}`} key={noteName}>{noteName}</Link>
                     ))}
                 </div>
             </div>
