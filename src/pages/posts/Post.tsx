@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
 
 // Vite imports all MDX files in the directory as lazy modules
 const posts = import.meta.glob('@/content/posts/*.mdx');
@@ -16,7 +16,7 @@ export default function Post() {
     }
 
     // Dynamically load the component
-    const PostContent = lazy(importPost as () => Promise<{ default: React.ComponentType }>);
+    const PostContent = lazy(importPost as () => Promise<{ default: ComponentType }>);
 
     return (
         <article className="prose">
