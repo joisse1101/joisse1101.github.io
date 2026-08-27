@@ -2,13 +2,13 @@ import { useParams } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
 // Vite imports all MDX files in the directory as lazy modules
-const posts = import.meta.glob('@/content/*.mdx');
+const posts = import.meta.glob('@/content/posts/*.mdx');
 
 export default function Post() {
     const { postId } = useParams<{ postId: string }>();
 
     // Find the key ending with `/${postId}.mdx`
-    const postPath = `/src/content/${postId}.mdx`;
+    const postPath = `/src/content/posts/${postId}.mdx`;
     const importPost = posts[postPath];
 
     if (!importPost) {
