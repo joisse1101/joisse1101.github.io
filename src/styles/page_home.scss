@@ -1,0 +1,20 @@
+
+.link-section {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    justify-content: space-between; 
+
+    @media(max-width: 640px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2.5rem;
+    }
+    .link-container {
+        display: flex;
+        min-width: 33vw;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
+}

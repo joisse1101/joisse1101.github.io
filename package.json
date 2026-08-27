@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:link": "yalc link @joisse1101/ui-library && npm run dev",
+    "dev:force": "vite --force",
+    "dev:link": "yalc link @joisse1101/ui-library && npm run dev:force",
+    "dev:update": "yalc update @joisse1101/ui-library && npm run dev:force",
     "build": "tsc -b && vite build",
-    "build:unlink": "yalc retreat @joisse1101/ui-library && npm install && npm run build",
+    "build:unlink": "yalc retreat @joisse1101/ui-library && npm update @joisse1101/ui-library && npm install && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
