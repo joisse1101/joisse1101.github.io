@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import "@joisse1101/ui-library/ui-library.css";
-import { MainLayout } from '@joisse1101/ui-library';
+import { MainLayout } from '@/layouts/MainLayout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 
